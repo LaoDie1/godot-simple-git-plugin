@@ -28,11 +28,10 @@ func _ready() -> void:
 #============================================================
 func update_files():
 	var data = await GitPlugin_Status.execute(["-u"])
-	#print( JSON.stringify(data, "\t") )
 	
 	var untracked_files : Array = data.get("Untracked files:", [])
 	var changes_not_staged_for_commit : Array = data.get("Changes not staged for commit:", [])
-	staged_changes_file_tree.add_items(changes_not_staged_for_commit)
+	staged_changes_file_tree.init_items(changes_not_staged_for_commit)
 	
 	# 过滤重复的文件
 	var filter_method = func(item_file):
@@ -41,9 +40,9 @@ func update_files():
 	files.append_array(changes_not_staged_for_commit.filter(filter_method))
 	
 	# 未提交
-	unstaged_changes_file_tree.add_items(files)
+	unstaged_changes_file_tree.init_items(files)
 	# 已提交
-	committed_file_tree.add_items(data.get("Changes to be committed:", []))
+	committed_file_tree.init_items(data.get("Changes to be committed:", []))
 
 
 func print_data(result, desc):
@@ -86,7 +85,7 @@ func _on_add_staged_files_pressed() -> void:
 	
 	# 获取文件列表
 	var list = []
-	for file in committed_file_tree.get_selected_file():
+	for file in staged_changes_file_tree.get_selected_file():
 		var idx = file.find(":")
 		if idx > -1:
 			file = file.substr(idx + 1)
@@ -96,8 +95,9 @@ func _on_add_staged_files_pressed() -> void:
 	print_data(result, "已添加")
 	
 	# 添加到树中
-	committed_file_tree.add_items(staged_changes_file_tree.get_selected_file())
-	staged_changes_file_tree.clear_select_items()
+	update_files.call_deferred()
+	#committed_file_tree.add_items(staged_changes_file_tree.get_selected_file())
+	#staged_changes_file_tree.clear_select_items()
 
 
 func _on_commit_changes_pressed() -> void:
@@ -110,8 +110,6 @@ func _on_commit_changes_pressed() -> void:
 	var result = await GitPlugin_Commit.execute(commit_message_text_edit.text.strip_edges())
 	commit_message_text_edit.text = ""
 	
-	
 	await Engine.get_main_loop().create_timer(1).timeout
-	unstaged_changes_file_tree.clear_select_items()
 	update_files()
 

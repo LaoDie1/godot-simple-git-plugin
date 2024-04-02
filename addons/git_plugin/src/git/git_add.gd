@@ -14,4 +14,6 @@ static func execute(params):
 		command.append_array(params)
 	elif params is String:
 		command.append(params)
+	else:
+		assert(false, "错误的参数类型")
 	return await GitPlugin_Console.execute(command)
