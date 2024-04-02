@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b6m25ar08vbba"]
+[gd_scene load_steps=18 format=3 uid="uid://b6m25ar08vbba"]
 
 [ext_resource type="Script" path="res://addons/git_plugin/src/panel/commit_panel.gd" id="1_sgv21"]
 [ext_resource type="Script" path="res://addons/git_plugin/src/panel/file_tree.gd" id="1_yr42x"]
@@ -75,6 +75,67 @@ data = {
 [sub_resource type="ImageTexture" id="ImageTexture_ivbas"]
 image = SubResource("Image_2wjec")
 
+[sub_resource type="Animation" id="Animation_x3tb4"]
+resource_name = "flicker"
+length = 1.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.0745098), Color(1, 1, 1, 1), Color(1, 1, 1, 0.0745098), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0.176471)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:editor_only")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="Animation" id="Animation_5rcym"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:editor_only")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_c0tl4"]
+_data = {
+"RESET": SubResource("Animation_5rcym"),
+"flicker": SubResource("Animation_x3tb4")
+}
+
 [node name="CommitPanel" type="Panel"]
 anchors_preset = 15
 anchor_right = 1.0
@@ -104,6 +165,23 @@ size_flags_vertical = 3
 
 [node name="Commit" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Commit"]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "Branch Name"
+popup/item_0/id = 0
+
+[node name="OptionButton2" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "Remote Name"
+popup/item_0/id = 0
 
 [node name="VSplitContainer" type="VSplitContainer" parent="MarginContainer/VBoxContainer/TabContainer/Commit"]
 layout_mode = 2
@@ -214,7 +292,7 @@ layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Submission information must be filled out."
 
-[node name="ReferenceRect" type="ReferenceRect" parent="MarginContainer/VBoxContainer/TabContainer/Commit/VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer/CommitMessageTextEdit"]
+[node name="CommitMessagePrompt" type="ReferenceRect" parent="MarginContainer/VBoxContainer/TabContainer/Commit/VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer/CommitMessageTextEdit"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -227,6 +305,12 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 border_width = 2.0
+
+[node name="CommitMessagePromptAnimationPlayer" type="AnimationPlayer" parent="MarginContainer/VBoxContainer/TabContainer/Commit/VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer/CommitMessageTextEdit/CommitMessagePrompt"]
+unique_name_in_owner = true
+libraries = {
+"": SubResource("AnimationLibrary_c0tl4")
+}
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Commit"]
 layout_mode = 2
