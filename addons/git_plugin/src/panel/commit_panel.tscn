@@ -101,6 +101,18 @@ tracks/1/keys = {
 "update": 1,
 "values": [true]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
 
 [sub_resource type="Animation" id="Animation_x3tb4"]
 resource_name = "flicker"
@@ -128,6 +140,18 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_c0tl4"]
@@ -266,7 +290,7 @@ size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Commit/VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2"]
 layout_mode = 2
-text = "Changes to be committed"
+text = "Commit List"
 
 [node name="CommittedFileTree" type="Tree" parent="MarginContainer/VBoxContainer/TabContainer/Commit/VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2"]
 unique_name_in_owner = true
@@ -295,6 +319,7 @@ size_flags_vertical = 3
 placeholder_text = "Submission information must be filled out."
 
 [node name="CommitMessagePrompt" type="ReferenceRect" parent="MarginContainer/VBoxContainer/TabContainer/Commit/VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer/CommitMessageTextEdit"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -321,12 +346,12 @@ alignment = 2
 [node name="UpdateFiles" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer2"]
 custom_minimum_size = Vector2(120, 60)
 layout_mode = 2
-text = "Updates Files"
+text = "Updates File"
 
 [node name="AddStagedFiles" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer2"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
-text = "Add Staged Files"
+text = "Add Staged File"
 
 [node name="CommitChanges" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer2"]
 unique_name_in_owner = true
@@ -334,7 +359,7 @@ custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 text = "Commit Changes"
 
-[node name="CommitList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="Commit List" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 

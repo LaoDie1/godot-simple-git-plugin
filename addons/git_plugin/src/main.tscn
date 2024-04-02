@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b6m25ar08vbba" path="res://addons/git_plugin/src/panel/commit_panel.tscn" id="3_nta5l"]
 
 [node name="Git" type="Control"]
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,7 +47,6 @@ metadata/_edit_use_anchors_ = true
 
 [node name="InitPanel" parent="." instance=ExtResource("2_ofyrm")]
 unique_name_in_owner = true
-visible = false
 layout_mode = 1
 
 [connection signal="pressed" from="CommitPanel/Test" to="." method="_on_test_pressed"]
