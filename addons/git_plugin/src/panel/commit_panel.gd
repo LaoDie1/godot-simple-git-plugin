@@ -46,6 +46,11 @@ func update_files():
 	committed_file_tree.add_items(data.get("Changes to be committed:", []))
 
 
+func print_data(result, desc):
+	print( "\n".join(result) )
+	print_debug("   ", desc)
+
+
 
 #============================================================
 #  连接信号
@@ -88,7 +93,7 @@ func _on_add_staged_files_pressed() -> void:
 		list.append('\"' + file.strip_edges() + '\"')
 	
 	var result = await GitPlugin_Add.execute(list)
-	print_debug(result)
+	print_data(result, "已添加")
 	
 	# 添加到树中
 	committed_file_tree.add_items(staged_changes_file_tree.get_selected_file())
@@ -103,8 +108,10 @@ func _on_commit_changes_pressed() -> void:
 		return
 	
 	var result = await GitPlugin_Commit.execute(commit_message_text_edit.text.strip_edges())
+	commit_message_text_edit.text = ""
 	
-	print_debug("   已提交 ", result)
 	
+	await Engine.get_main_loop().create_timer(1).timeout
+	unstaged_changes_file_tree.clear_select_items()
 	update_files()
 

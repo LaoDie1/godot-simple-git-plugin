@@ -27,7 +27,8 @@ func _ready() -> void:
 #  连接信号
 #============================================================
 func _on_test_pressed() -> void:
-	GitPlugin_Console.instance.git_reflog()
+	var result = await GitPlugin_Log.execute()
+	print_debug( JSON.stringify(result, "\t") )
 
 
 func _on_init_panel_visibility_changed() -> void:

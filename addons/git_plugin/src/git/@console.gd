@@ -50,6 +50,10 @@ func _init() -> void:
 	shell.request_finished.connect(
 		func(id, command, output):
 			var result : String = output[0]
+			
+			# FIXME 修复中文乱码问题
+			#result = result.to_ascii_buffer().get_string_from_utf8()
+			
 			if result.find("\r\n") != -1:
 				output = result.split("\r\n")
 			else:
@@ -66,6 +70,10 @@ func _init() -> void:
 #  自定义
 #============================================================
 static func execute(command: Array, wait_time: float = 10.0):
+	print("=".repeat(50))
+	print_debug("执行命令：", " ".join(command) )
+	print()
+	
 	var id = instance._execute(command.duplicate(true))
 	var result = await instance.get_request_result(id, wait_time)
 	if typeof(result) == TYPE_NIL:

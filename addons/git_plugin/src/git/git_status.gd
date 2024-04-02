@@ -15,18 +15,28 @@ static func execute(params: Array = []):
 	return _handle_result(result)
 
 
+static var _block_regex: RegEx:
+	get:
+		if _block_regex == null:
+			_block_regex = RegEx.new()
+			_block_regex.compile("^\\w+")
+		return _block_regex
+
 # 分组。每个项的第一个为这个组的类别
 static func __group(output: Array) -> Array[Array]:
 	var data : Array[Array] = []
 	var group = []
 	for line in output:
 		# 新的一块
-		if line == "":
+		if _block_regex.search(line) != null:
 			if not group.is_empty():
 				data.append(group)
 			group = []
+			if line:
+				group.append(line)
 		else:
-			group.append(line)
+			if line:
+				group.append(line)
 	if not group.is_empty():
 		data.append(group)
 	return data
