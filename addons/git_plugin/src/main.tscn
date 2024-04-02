@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b0mo6ij8gieuf" path="res://addons/git_plugin/src/panel/init_panel.tscn" id="2_ofyrm"]
 [ext_resource type="PackedScene" uid="uid://b6m25ar08vbba" path="res://addons/git_plugin/src/panel/commit_panel.tscn" id="3_nta5l"]
 
-[node name="Main" type="Control"]
+[node name="Git" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,7 +14,6 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_g7vdx")
-metadata/_edit_lock_ = true
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
@@ -24,10 +23,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="InitPanel" parent="." instance=ExtResource("2_ofyrm")]
-unique_name_in_owner = true
-layout_mode = 1
-
 [node name="CommitPanel" parent="." instance=ExtResource("3_nta5l")]
 unique_name_in_owner = true
 layout_mode = 1
@@ -36,9 +31,9 @@ layout_mode = 1
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.492622
-anchor_top = 0.464783
+anchor_top = 0.577826
 anchor_right = 0.492622
-anchor_bottom = 0.464783
+anchor_bottom = 0.577826
 offset_left = -100.5
 offset_top = -31.5
 offset_right = 100.5
@@ -49,5 +44,10 @@ focus_mode = 0
 text = "Test"
 metadata/_edit_use_anchors_ = true
 
-[connection signal="visibility_changed" from="InitPanel" to="." method="_on_init_panel_visibility_changed"]
+[node name="InitPanel" parent="." instance=ExtResource("2_ofyrm")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="CommitPanel/Test" to="." method="_on_test_pressed"]
+[connection signal="visibility_changed" from="InitPanel" to="." method="_on_init_panel_visibility_changed"]

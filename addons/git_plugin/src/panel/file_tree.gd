@@ -5,6 +5,7 @@
 # - datetime: 2024-04-02 16:10:02
 # - version: 4.2.1.stable
 #============================================================
+@tool
 class_name GitPlugin_FileTree
 extends Tree
 

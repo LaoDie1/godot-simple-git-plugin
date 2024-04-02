@@ -2,11 +2,15 @@
 extends EditorPlugin
 
 
+const MAIN = preload("res://addons/git_plugin/src/main.tscn")
+
+var plugin_control : Control
+
+
 func _enter_tree() -> void:
-	# Initialization of the plugin goes here.
-	pass
+	plugin_control = MAIN.instantiate()
+	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, plugin_control)
 
 
 func _exit_tree() -> void:
-	# Clean-up of the plugin goes here.
-	pass
+	remove_control_from_docks(plugin_control)

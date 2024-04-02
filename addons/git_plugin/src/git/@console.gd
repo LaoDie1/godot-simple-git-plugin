@@ -70,8 +70,8 @@ func _init() -> void:
 #  自定义
 #============================================================
 static func execute(command: Array, wait_time: float = 10.0):
-	print("=".repeat(50))
-	print_debug("执行命令：", " ".join(command) )
+	print("=".repeat(60))
+	print_debug("Execute Command: ", " ".join(command) )
 	print()
 	
 	var id = instance._execute(command.duplicate(true))
