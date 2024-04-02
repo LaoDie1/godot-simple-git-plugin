@@ -344,9 +344,9 @@ layout_mode = 2
 alignment = 2
 
 [node name="UpdateFiles" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer2"]
-custom_minimum_size = Vector2(120, 60)
+custom_minimum_size = Vector2(90, 60)
 layout_mode = 2
-text = "Updates File"
+text = "Updates"
 
 [node name="AddStagedFiles" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Commit/HBoxContainer2"]
 custom_minimum_size = Vector2(150, 60)
