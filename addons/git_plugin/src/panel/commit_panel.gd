@@ -110,6 +110,5 @@ func _on_commit_changes_pressed() -> void:
 	var result = await GitPlugin_Commit.execute(commit_message_text_edit.text.strip_edges())
 	commit_message_text_edit.text = ""
 	
-	await Engine.get_main_loop().create_timer(1).timeout
-	update_files()
+	update_files.call_deferred()
 
