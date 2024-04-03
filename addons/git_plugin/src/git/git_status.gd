@@ -5,12 +5,33 @@
 # - datetime: 2024-04-02 22:42:34
 # - version: 4.2.1.stable
 #============================================================
+## 文件状态  https://blog.csdn.net/weixin_44567318/article/details/119701438
 class_name GitPlugin_Status
 
 
-static func execute(params: Array = []):
-	var command = ["git", "status"]
-	command.append_array(params)
+static func get_files():
+	var result = await GitPlugin_Console.execute(["git status -s"])
+	
+	#第一列字符表示版本库与暂存区之间的比较状态。
+	#第二列字符表示暂存区与工作区之间的比较状态。
+	
+	#' ' （空格）表示文件未发生更改
+	#M 表示文件发生改动。
+	#A 表示新增文件。
+	#D 表示删除文件。
+	#R 表示重命名。
+	#C 表示复制。
+	#U 表示更新但未合并。
+	#? 表示未跟踪文件。
+	#! 表示忽略文件。
+	
+	for item in result:
+		pass
+	
+
+
+static func execute():
+	var command = ["git status -u" ]
 	var result = await GitPlugin_Console.execute(command)
 	return _handle_result(result)
 

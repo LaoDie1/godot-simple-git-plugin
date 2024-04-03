@@ -1,17 +1,16 @@
 #============================================================
-#    Command Prompt
+#    Editor Script
 #============================================================
 # - author: zhangxuetu
-# - datetime: 2024-04-02 12:56:11
+# - datetime: 2024-04-03 23:31:14
 # - version: 4.2.1.stable
 #============================================================
-# Windows CMD
-extends GitPlugin_Shell
+@tool
+extends EditorScript
 
 
-func _execute(command: Array):
-	var output = []
-	var c = ["/C"]
-	c.append_array(command)
-	OS.execute("CMD.exe", c, output)
-	return output
+func _run() -> void:
+	var text : String = "娣诲姞鎻掍欢鍒扮紪杈戝櫒涓?"
+	
+	print(text.unicode_at(0))
+	

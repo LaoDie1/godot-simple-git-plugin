@@ -10,24 +10,20 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_wcwv8")
 
-[node name="LogItemList" type="ItemList" parent="."]
+[node name="LogItemTree" type="Tree" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-item_count = 10
-item_0/text = "1b4b7b5  2024 Apr 3 09:58:48  test"
-item_1/text = "675702e  2024 Apr 3 09:54:31  鎻愪氦淇敼"
-item_2/text = "6ec476e  2024 Apr 3 02:07:31  鏇存柊鍦烘櫙"
-item_3/text = "9cb35f6  2024 Apr 3 02:06:47  鏇存柊閮ㄥ垎鍐呭"
-item_4/text = "e71c3da  2024 Apr 3 01:54:43  娣诲姞鎻掍欢鍒扮紪杈戝櫒涓?"
-item_5/text = "57d32c4  2024 Apr 3 01:43:29  鐣ュ井鏇存柊"
-item_6/text = "d445c42  2024 Apr 3 01:43:08  鏇存柊娣诲姞閮ㄥ垎"
-item_7/text = "fdf65fa  2024 Apr 3 01:40:16  淇敼"
-item_8/text = "0fb0324  2024 Apr 3 01:29:50  鎻愪氦鏂囦欢"
-item_9/text = "a25b9cf  2024 Apr 3 00:52:25  first commit"
+columns = 3
+column_titles_visible = true
+hide_folding = true
+hide_root = true
+select_mode = 1
 
 [node name="UpdateLogButton" type="Button" parent="."]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Update Log"
+
+[connection signal="pressed" from="UpdateLogButton" to="." method="update_log"]

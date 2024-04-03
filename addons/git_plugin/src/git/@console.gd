@@ -12,7 +12,6 @@ extends RefCounted
 
 
 const CommandPrompt = preload("shell/command_prompt.gd")
-const PowerShell = preload("shell/power_shell.gd")
 const Terminal = preload("shell/terminal.gd")
 
 
@@ -39,10 +38,7 @@ func _init() -> void:
 		"Linux", "macOS":
 			shell = Terminal.new()
 		"Windows":
-			if DirAccess.dir_exists_absolute("C:\\Windows\\System32\\WindowsPowerShell"):
-				shell = PowerShell.new()
-			else:
-				shell = CommandPrompt.new()
+			shell = CommandPrompt.new()
 		_:
 			assert(false, "不支持这个平台：" + OS.get_name())
 	
@@ -50,18 +46,7 @@ func _init() -> void:
 	shell.request_finished.connect(
 		func(id, command, output):
 			var result : String = output[0]
-			# 结果为 "" 执行可能失败
-			if result != "":
-				# FIXME 需要修复中文乱码问题
-				#result = result.to_ascii_buffer().get_string_from_utf8()
-				
-				if result.find("\r\n") != -1:
-					output = result.split("\r\n")
-				else:
-					output = result.split("\n")
-			else:
-				output = []
-			self._id_to_request_result_cache[id] = output
+			self._id_to_request_result_cache[id] = result
 			
 			if self.thread != null:
 				self.thread.wait_to_finish()
@@ -74,7 +59,7 @@ func _init() -> void:
 #  自定义
 #============================================================
 ## 执行命令
-static func execute(command: Array, wait_time: float = 10.0):
+static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool = true):
 	print("=".repeat(60))
 	print_debug("Execute Command: ", " ".join(command) )
 	print()
@@ -83,7 +68,20 @@ static func execute(command: Array, wait_time: float = 10.0):
 	var result = await instance.get_request_result(id, wait_time)
 	if typeof(result) == TYPE_NIL:
 		printerr("id 为 ", id, " 的 ", command, " 命令结果为 null")
-	return result
+	
+	# 结果为 "" 执行可能失败
+	var output = []
+	if enable_handle:
+		if result != "":
+			# FIXME 需要修复中文乱码问题
+			#result = result.to_ascii_buffer().get_string_from_utf8()
+			output = result.split("\n")
+		else:
+			output = []
+	else:
+		output = [result]
+	
+	return output
 
 
 # 返回执行时的 id

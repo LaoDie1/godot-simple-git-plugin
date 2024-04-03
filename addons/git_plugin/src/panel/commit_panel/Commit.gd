@@ -31,7 +31,11 @@ func _ready() -> void:
 #  自定义
 #============================================================
 func update_files():
-	var data = await GitPlugin_Status.execute(["-u"])
+	#var result = await GitPlugin_ls_files.get_unstaged_changes()
+	#unstaged_changes_file_tree.init_items(result.deleted)
+	#return 
+	
+	var data = await GitPlugin_Status.execute()
 	
 	var untracked_files : Array = data.get("Untracked files:", [])
 	var changes_not_staged_for_commit : Array = data.get("Changes not staged for commit:", [])

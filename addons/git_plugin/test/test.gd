@@ -1,17 +1,20 @@
 #============================================================
-#    Command Prompt
+#    Test
 #============================================================
 # - author: zhangxuetu
-# - datetime: 2024-04-02 12:56:11
+# - datetime: 2024-04-03 21:08:18
 # - version: 4.2.1.stable
 #============================================================
-# Windows CMD
-extends GitPlugin_Shell
+extends Node2D
 
 
-func _execute(command: Array):
-	var output = []
-	var c = ["/C"]
-	c.append_array(command)
-	OS.execute("CMD.exe", c, output)
-	return output
+func print_data(data):
+	print( JSON.stringify(data, "\t") )
+	
+
+
+func _ready() -> void:
+	
+	var result = await GitPlugin_Log.execute()
+	print_data(result)
+
