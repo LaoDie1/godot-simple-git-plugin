@@ -9,6 +9,6 @@ class_name GitPlugin_Reset
 
 
 static func execute():
-	var command = ["git", "reset", "HEAD", ]
+	var command = ["git reset HEAD", ]
 	var result = await GitPlugin_Console.execute(command)
 	return result
