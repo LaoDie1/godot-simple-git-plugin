@@ -109,8 +109,11 @@ func _on_commit_changes_pressed() -> void:
 		commit_message_prompt_animation_player.play("flicker")
 		return
 	
-	var result = await GitPlugin_Commit.execute(commit_message_text_edit.text.strip_edges())
-	commit_message_text_edit.text = ""
+	# 提交
+	var commit_desc = JSON.stringify(commit_message_text_edit.text.strip_edges())
+	var result = await GitPlugin_Commit.execute(commit_desc)
+	print_debug(result)
 	
+	commit_message_text_edit.text = ""
 	update_files.call_deferred()
 
