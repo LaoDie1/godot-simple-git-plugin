@@ -120,4 +120,4 @@ func _on_commit_changes_pressed() -> void:
 
 
 func _on_push_pressed() -> void:
-	GitPlugin_Pull.execute()
+	GitPlugin_Push.execute()
