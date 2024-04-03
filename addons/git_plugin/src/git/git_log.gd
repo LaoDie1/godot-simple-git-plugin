@@ -18,19 +18,26 @@ static func execute():
 static func _handle_result(output):
 	var _regex = RegEx.new()
 	_regex.compile("^commit (\\w+)")
-	
+	# 对每次提交进行分组
 	var list = []
 	var group = []
 	for line in output:
 		if line:
 			if _regex.search(line):
-				if not group.is_empty():
-					list.append(group)
+				_append(list, group)
 				group = []
 				group.append(line)
 			else:
 				group.append(line)
-	if not group.is_empty():
-		list.append(group)
-	
+	_append(list, group)
 	return list
+
+
+static func _append(list: Array, group: Array):
+	if not group.is_empty():
+		var tmp = group.slice(0, 4)
+		var files = group.slice(4, group.size() - 1)
+		tmp.append(files)
+		tmp.append(group.back())
+		list.append(tmp)
+

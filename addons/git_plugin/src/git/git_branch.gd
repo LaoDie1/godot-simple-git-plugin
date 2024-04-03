@@ -11,5 +11,8 @@ class_name GitPlugin_Branch
 ## 所有分支
 static func all():
 	var result = await GitPlugin_Console.execute(["git", "branch", "-a"])
+	
+	
+	return result
 
 

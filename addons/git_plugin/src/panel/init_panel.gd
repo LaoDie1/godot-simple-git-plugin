@@ -16,6 +16,9 @@ extends Panel
 #  内置
 #============================================================
 func _ready() -> void:
+	if not GitPluginConst.enabled_plugin:
+		return
+	
 	# 移动到最后，显示为最前面
 	self.get_parent().move_child.call_deferred(self, self.get_parent().get_child_count()-1)
 	self.visible = not DirAccess.dir_exists_absolute("res://.git")

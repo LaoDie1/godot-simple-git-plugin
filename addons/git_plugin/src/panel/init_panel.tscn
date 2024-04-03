@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://addons/git_plugin/src/panel/init_panel.gd" id="1_elcij"]
 
 [node name="InitPanel" type="Panel"]
-visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -13,7 +12,6 @@ script = ExtResource("1_elcij")
 
 [node name="InitButton" type="Button" parent="."]
 unique_name_in_owner = true
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

@@ -8,6 +8,11 @@
 class_name GitPlugin_Remote
 
 
+static func version():
+	var result = await GitPlugin_Console.execute(["git", "remote", "-v"])
+	return result
+
+
 static func add(short_name: String, url: String):
 	var command = ["git", "remote", "add", short_name, url]
 	return await GitPlugin_Console.execute(command)

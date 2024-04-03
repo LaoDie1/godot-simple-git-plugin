@@ -8,6 +8,7 @@ var plugin_control : Control
 
 
 func _enter_tree() -> void:
+	GitPluginConst.enabled_plugin = true
 	plugin_control = MAIN.instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, plugin_control)
 

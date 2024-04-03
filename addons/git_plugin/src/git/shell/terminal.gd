@@ -12,5 +12,7 @@ extends GitPlugin_Shell
 func _execute(command):
 	var output = []
 	var p = command.pop_front()
-	OS.execute(p, command, output)
+	var err = OS.execute(p, command, output)
+	if err != OK:
+		printerr("执行失败：", err, " ", error_string(err) )
 	return output
