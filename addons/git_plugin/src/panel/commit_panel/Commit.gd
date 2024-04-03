@@ -104,6 +104,7 @@ func _on_add_staged_files_pressed() -> void:
 
 func _on_commit_changes_pressed() -> void:
 	if committed_file_tree.get_selected_file().is_empty():
+		push_error("没有选中文件")
 		return
 	if commit_message_text_edit.text.strip_edges() == "":
 		commit_message_prompt_animation_player.play("flicker")
@@ -112,8 +113,10 @@ func _on_commit_changes_pressed() -> void:
 	# 提交
 	var commit_desc = JSON.stringify(commit_message_text_edit.text.strip_edges())
 	var result = await GitPlugin_Commit.execute(commit_desc)
-	print_debug(result)
 	
 	commit_message_text_edit.text = ""
 	update_files.call_deferred()
 
+
+func _on_push_pressed() -> void:
+	GitPlugin_Pull.execute()

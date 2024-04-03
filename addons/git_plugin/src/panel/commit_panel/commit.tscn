@@ -185,10 +185,6 @@ selected = 0
 popup/item_0/text = "Remote Name"
 popup/item_0/id = 0
 
-[node name="AddRemote" type="Button" parent="HBoxContainer"]
-layout_mode = 2
-text = "Add Remote"
-
 [node name="VSplitContainer" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
@@ -263,6 +259,11 @@ script = ExtResource("2_fmujg")
 action_texture = SubResource("ImageTexture_ivbas")
 enabled_delete = false
 
+[node name="AddStagedFiles" type="Button" parent="VSplitContainer/VSplitContainer2/VBoxContainer2"]
+layout_mode = 2
+tooltip_text = "添加暂存区的文件到 git"
+text = "Add File"
+
 [node name="VSplitContainer" type="VSplitContainer" parent="VSplitContainer/VSplitContainer2"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -334,21 +335,21 @@ layout_mode = 2
 tooltip_text = "更新列表中的文件"
 text = "Updates"
 
-[node name="AddStagedFiles" type="Button" parent="HBoxContainer2"]
-layout_mode = 2
-tooltip_text = "添加暂存区的文件到 git"
-text = "Add Staged File"
-
 [node name="CommitChanges" type="Button" parent="HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "提交变更的文件"
 text = "Commit Changes"
 
+[node name="Push" type="Button" parent="HBoxContainer2"]
+layout_mode = 2
+text = "Push"
+
 [connection signal="pressed" from="VSplitContainer/VBoxContainer/HBoxContainer/AddAll" to="." method="_on_add_all_pressed"]
 [connection signal="action_file" from="VSplitContainer/VBoxContainer/UnstagedChangesFileTree" to="." method="_on_unstaged_changes_file_tree_action_file"]
 [connection signal="pressed" from="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3/RemoveAll" to="." method="_on_remove_all_pressed"]
 [connection signal="action_file" from="VSplitContainer/VSplitContainer2/VBoxContainer2/StagedChangesFileTree" to="." method="_on_staged_changes_file_tree_action_file"]
+[connection signal="pressed" from="VSplitContainer/VSplitContainer2/VBoxContainer2/AddStagedFiles" to="." method="_on_add_staged_files_pressed"]
 [connection signal="pressed" from="HBoxContainer2/UpdateFiles" to="." method="update_files"]
-[connection signal="pressed" from="HBoxContainer2/AddStagedFiles" to="." method="_on_add_staged_files_pressed"]
 [connection signal="pressed" from="HBoxContainer2/CommitChanges" to="." method="_on_commit_changes_pressed"]
+[connection signal="pressed" from="HBoxContainer2/Push" to="." method="_on_push_pressed"]

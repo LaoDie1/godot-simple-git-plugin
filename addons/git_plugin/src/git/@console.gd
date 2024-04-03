@@ -48,6 +48,8 @@ func _init() -> void:
 			var result : String = output[0]
 			self._id_to_request_result_cache[id] = result
 			
+			print_debug(" >>> ", command, " 执行完成")
+			
 			if self.thread != null:
 				self.thread.wait_to_finish()
 				self.thread = null

@@ -14,4 +14,4 @@ static func execute(desc: String):
 		desc = "\"" + desc
 	if desc.right(1) != "\"":
 		desc = desc + "\""
-	return await GitPlugin_Console.execute(["git", "commit", "-m", desc])
+	return await GitPlugin_Console.execute(["git commit -m ", desc])
