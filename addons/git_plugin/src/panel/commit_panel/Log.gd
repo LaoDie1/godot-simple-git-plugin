@@ -33,8 +33,8 @@ func _ready() -> void:
 #============================================================
 ## 更新日志列表
 func update_log():
-	for child in tree_root.get_children():
-		tree_root.remove_child(child)
+	log_item_tree.clear()
+	tree_root = log_item_tree.create_item()
 	
 	var result = await GitPlugin_Log.execute()
 	var idx = 0
