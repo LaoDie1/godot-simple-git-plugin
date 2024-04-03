@@ -9,8 +9,9 @@
 class_name GitPlugin_Init
 
 
-static func execute(short_name: String = "", remote_url: String = ""):
-	return await GitPlugin_Console.execute(["git", "init"])
+static func execute(branch_name: String = "main"):
+	var result = await GitPlugin_Console.execute(["git", "init"])
+	GitPlugin_Console.execute(["git", "branch", "-M", branch_name])
 
 
 

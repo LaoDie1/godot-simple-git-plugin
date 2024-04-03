@@ -32,7 +32,7 @@ func _ready() -> void:
 #  连接信号
 #============================================================
 func _on_init_button_pressed() -> void:
-	await GitPlugin_Init.execute()
+	await GitPlugin_Init.execute("main")
 	init_button.disabled = DirAccess.dir_exists_absolute("res://.git")
 	self.visible = not DirAccess.dir_exists_absolute("res://.git")
 
