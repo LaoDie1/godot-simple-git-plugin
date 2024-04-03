@@ -16,10 +16,6 @@ extends Control
 #============================================================
 #  内置
 #============================================================
-func _init() -> void:
-	GitPluginCustomData.init()
-
-
 func _ready() -> void:
 	commit_panel.visible = not init_panel.visible
 

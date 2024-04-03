@@ -5,7 +5,7 @@
 # - datetime: 2024-04-02 12:56:06
 # - version: 4.2.1.stable
 #============================================================
-# Window 平台
+# Windows PowerShell
 extends GitPlugin_Shell
 
 

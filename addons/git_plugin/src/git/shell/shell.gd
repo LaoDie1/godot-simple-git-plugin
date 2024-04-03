@@ -9,7 +9,7 @@
 class_name GitPlugin_Shell
 
 
-signal request_finished(id, command, output)
+signal request_finished(id, command, result)
 
 
 func execute(id, command: Array):

@@ -13,7 +13,6 @@ static func execute():
 	return _handle_result(result)
 
 
-
 static var _regex_diff : RegEx:
 	get:
 		if _regex_diff == null:

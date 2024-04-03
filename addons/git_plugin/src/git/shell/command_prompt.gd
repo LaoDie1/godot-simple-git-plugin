@@ -5,7 +5,7 @@
 # - datetime: 2024-04-02 12:56:11
 # - version: 4.2.1.stable
 #============================================================
-# window 平台
+# Windows CMD
 extends GitPlugin_Shell
 
 

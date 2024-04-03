@@ -50,18 +50,22 @@ func _init() -> void:
 	shell.request_finished.connect(
 		func(id, command, output):
 			var result : String = output[0]
-			
-			# FIXME 修复中文乱码问题
-			#result = result.to_ascii_buffer().get_string_from_utf8()
-			
-			if result.find("\r\n") != -1:
-				output = result.split("\r\n")
+			# 结果为 "" 执行可能失败
+			if result != "":
+				# FIXME 需要修复中文乱码问题
+				#result = result.to_ascii_buffer().get_string_from_utf8()
+				
+				if result.find("\r\n") != -1:
+					output = result.split("\r\n")
+				else:
+					output = result.split("\n")
 			else:
-				output = result.split("\n")
+				output = []
 			self._id_to_request_result_cache[id] = output
-			#if self.thread:
-				#self.thread.wait_to_finish()
-				#self.thread = null
+			
+			if self.thread != null:
+				self.thread.wait_to_finish()
+				self.thread = null
 	, Object.CONNECT_DEFERRED)
 
 
@@ -69,6 +73,7 @@ func _init() -> void:
 #============================================================
 #  自定义
 #============================================================
+## 执行命令
 static func execute(command: Array, wait_time: float = 10.0):
 	print("=".repeat(60))
 	print_debug("Execute Command: ", " ".join(command) )
@@ -77,12 +82,12 @@ static func execute(command: Array, wait_time: float = 10.0):
 	var id = instance._execute(command.duplicate(true))
 	var result = await instance.get_request_result(id, wait_time)
 	if typeof(result) == TYPE_NIL:
-		push_error("id 为 ", id, " 的 ", command, " 命令结果为 null")
 		printerr("id 为 ", id, " 的 ", command, " 命令结果为 null")
 	return result
 
 
-func _execute(command: Array):
+# 返回执行时的 id
+func _execute(command: Array) -> int:
 	if thread != null:
 		thread.wait_to_finish()
 	thread = Thread.new()
@@ -92,7 +97,7 @@ func _execute(command: Array):
 	return _incr_id
 
 
-# 获取请求结果
+## 获取这个ID请求的结果，超时返回 [code]null[/code]
 func get_request_result(id: int, wait_time: float) -> Variant:
 	wait_time = int(max(0.001, wait_time) * 1000)
 	var start_time = Time.get_ticks_msec()
