@@ -29,6 +29,7 @@ unique_name_in_owner = true
 layout_mode = 1
 
 [node name="Test" type="Button" parent="CommitPanel"]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.128038
