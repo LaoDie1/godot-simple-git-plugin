@@ -81,7 +81,6 @@ func update_log():
 
 
 
-
 #============================================================
 #  连接信号
 #============================================================
@@ -140,6 +139,6 @@ func _on_commit_changes_pressed() -> void:
 	commit_message_text_edit.text = ""
 	
 	update_files.call_deferred()
-
+	update_log.call_deferred()
 
 
