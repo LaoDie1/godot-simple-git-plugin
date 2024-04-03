@@ -10,4 +10,4 @@ class_name GitPlugin_Commit
 
 static func execute(desc: String):
 	desc = JSON.stringify(desc.strip_edges())
-	return await GitPlugin_Console.execute(["git commit -m ", desc])
+	return await GitPlugin_Console.execute(["git commit -m " + desc])
