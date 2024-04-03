@@ -13,20 +13,20 @@ static func version():
 	return result
 
 
-static func add(short_name: String, url: String):
-	var command = ["git", "remote", "add", short_name, url]
+static func add(remote_name: String, url: String):
+	var command = ["git", "remote", "add", remote_name, url]
 	return await GitPlugin_Console.execute(command)
 
 
-static func remove(short_name: String):
-	return await GitPlugin_Console.execute(["git", "remote", "rm", short_name])
+static func remove(remote_name: String):
+	return await GitPlugin_Console.execute(["git", "remote", "rm", remote_name])
 
 ## 修改仓库名
-static func rename(old_short_name: String, new_short_name: String):
-	return await GitPlugin_Console.execute(["git", "remote", "rename", old_short_name, new_short_name])
+static func rename(old_remote_name: String, new_remote_name: String):
+	return await GitPlugin_Console.execute(["git", "remote", "rename", old_remote_name, new_remote_name])
 
 ## 显示远程仓库信息
-static func show(short_name: String):
-	return await GitPlugin_Console.execute(["git", "remote", "show", short_name])
+static func show(remote_name: String):
+	return await GitPlugin_Console.execute(["git", "remote", "show", remote_name])
 
 
