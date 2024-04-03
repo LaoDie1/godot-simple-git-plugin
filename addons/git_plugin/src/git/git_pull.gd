@@ -9,5 +9,6 @@
 class_name GitPlugin_Pull
 
 
-static func execute():
+static func execute(remote_name: String = "", branch_name: String = ""):
+	
 	return await GitPlugin_Console.execute(["git", "pull"])
