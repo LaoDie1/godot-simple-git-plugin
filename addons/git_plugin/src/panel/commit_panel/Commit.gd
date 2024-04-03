@@ -111,8 +111,9 @@ func _on_commit_changes_pressed() -> void:
 		return
 	
 	# 提交
-	var commit_desc = JSON.stringify(commit_message_text_edit.text.strip_edges())
-	var result = await GitPlugin_Commit.execute(commit_desc)
+	var result = await GitPlugin_Commit.execute(
+		commit_message_text_edit.text.strip_edges()
+	)
 	
 	commit_message_text_edit.text = ""
 	update_files.call_deferred()
