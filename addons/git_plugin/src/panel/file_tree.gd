@@ -37,7 +37,7 @@ var _file_name_regex : RegEx:
 		if _file_name_regex == null:
 			_file_name_regex = RegEx.new()
 			_file_name_regex.compile(
-				"((?<type>\\w+):\\s+)?" # 改动类型
+				"((?<type>[^:]+):\\s+)?" # 改动类型
 				+ "("
 				+ "(?<origin>.*?)\\s->\\s(?<current>.*)"  # 文件重命名或发生了移动
 				+ "|(?<path>.*)" # 文件内容发生改动
@@ -156,11 +156,11 @@ func add_item(item_file: String):
 			if new_file_color != Color.WHITE:
 				item.set_custom_color(0, new_file_color)
 		_:
-			print_debug(" >>> type: ", type)
+			print(" >>> FileTree: item type = ", type)
 	
 	# 文件名
 	file = file.trim_prefix("\t")
-	item.set_text(0, file + ("" if type == "" else " (%s)" % type ) )
+	item.set_text(0, file + " (%s)" % type)
 	item.set_tooltip_text(0, file)
 	item.set_meta("file", file)
 	item.set_meta("item_file", item_file)
