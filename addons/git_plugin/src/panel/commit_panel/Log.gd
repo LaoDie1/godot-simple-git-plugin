@@ -52,7 +52,6 @@ func update_log():
 	var item_text = log_number_option.get_item_text(item_id)
 	if item_text != "All":
 		log_number = int(item_text)
-	print("显示日志数量：", log_number)
 	
 	var result = await GitPlugin_Log.execute(log_number)
 	var idx = 0
