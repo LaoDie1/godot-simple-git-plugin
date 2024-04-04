@@ -29,6 +29,9 @@ func _ready() -> void:
 	log_item_tree.set_column_title(0, "ID")
 	log_item_tree.set_column_title(1, "Date")
 	log_item_tree.set_column_title(2, "Description")
+	log_item_tree.set_column_title_alignment(0, HORIZONTAL_ALIGNMENT_LEFT)
+	log_item_tree.set_column_title_alignment(1, HORIZONTAL_ALIGNMENT_LEFT)
+	log_item_tree.set_column_title_alignment(2, HORIZONTAL_ALIGNMENT_LEFT)
 	
 	update_log.call_deferred()
 

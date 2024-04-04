@@ -10,3 +10,4 @@
 
 > 注意不要有中文的文件名，否则会识别错误
 
+![](addons/git_plugin/assets/IMAGE_20240404223860.png)
