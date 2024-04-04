@@ -62,25 +62,22 @@ static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool
 	
 	# 处理执行结果
 	var data : Dictionary = {}
-	if typeof(result) == TYPE_NIL:
-		printerr("id 为 ", id, " 的 ", command, " 命令结果为 null")
-		data["err"] = FAILED
-		data["output"] = []
-		return data
-	else:
+	if typeof(result) != TYPE_NIL:
 		data["err"] = OK
 		result = str(result).strip_edges(false, true)
-	
-	if enable_handle:
-		if result != "":
+		if enable_handle and result != "":
 			# FIXME 需要修复中文乱码问题
 			data["output"] = result.split("\n")
 		else:
-			data["output"] = []
+			data["output"] = [result] if result else []
+		
+		return data
+		
 	else:
-		data["output"] = [result]
-	
-	return data
+		data["err"] = FAILED
+		data["output"] = []
+		printerr("id 为 ", id, " 的 ", command, " 命令结果为 ", result)
+		return data
 
 
 # 返回执行时的 id

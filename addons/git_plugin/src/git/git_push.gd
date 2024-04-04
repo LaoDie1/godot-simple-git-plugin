@@ -12,7 +12,7 @@ class_name GitPlugin_Push
 ## 设置推流
 static func set_upstream(remote_name: String, branch_name: String):
 	var command = ["git push --set-upstream %s %s " % [remote_name, branch_name] ]
-	var result = await GitPlugin_Executor.execute(command, 30)
+	var result = await GitPlugin_Executor.execute(command, 20)
 	return result["output"]
 
 
