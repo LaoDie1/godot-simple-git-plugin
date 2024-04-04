@@ -27,10 +27,23 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 @export var enabled_delete : bool = true
 @export var enabled_action : bool = true
 
+
 var _last_select_item : TreeItem
 var _root : TreeItem
 var _file_to_item_dict : Dictionary = {}
 var _file_to_checked_dict : Dictionary = {}
+var _file_name_regex : RegEx:
+	get:
+		if _file_name_regex == null:
+			_file_name_regex = RegEx.new()
+			_file_name_regex.compile(
+				"((?<type>\\w+):\\s+)?" # 改动类型
+				+ "("
+				+ "(?<origin>.*?)\\s->\\s(?<current>.*)"  # 文件重命名或发生了移动
+				+ "|(?<path>.*)" # 文件内容发生改动
+				+ ")"
+			)
+		return _file_name_regex
 
 
 var enum_edit: int = 1:
@@ -114,32 +127,40 @@ func add_item(item_file: String):
 	set_checked(item, _file_to_checked_dict.get(item_file, true), item_file)
 	
 	# 颜色
-	var file : String = item_file
-	var type : String = ""
-	var idx = item_file.find(":")
-	if idx > -1:
-		type = item_file.substr(0, idx).strip_edges()
-		match type.to_lower():
-			"modified": # 修改过的文件
-				if modified_file_color != Color.WHITE:
-					item.set_custom_color(0, modified_file_color)
-			"deleted": # 删除的文件
-				if deleted_file_color != Color.WHITE:
-					item.set_custom_color(0, deleted_file_color)
-			"new file":
-				if new_file_color != Color.WHITE:
-					item.set_custom_color(0, new_file_color)
-			_:
-				print_debug(" >>> type: ", type)
-		file = item_file.substr(idx + 1).strip_edges()
+	var file : String
+	var type : String
+	var result : RegExMatch = _file_name_regex.search(item_file)
+	if result != null:
+		type = result.get_string("type")
+		if result.get_string("origin") != "":
+			var old_path = result.get_string("origin")
+			var new_path = result.get_string("current")
+			file = new_path
+		
+		elif result.get_string("path") != "":
+			file = result.get_string("path")
+			type = result.get_string("type")
+		
 	else:
+		file = item_file
 		type = "new file"
-		if new_file_color != Color.WHITE:
-			item.set_custom_color(0, new_file_color)
+	
+	match type.to_lower():
+		"modified", "renamed":
+			if modified_file_color != Color.WHITE:
+				item.set_custom_color(0, modified_file_color)
+		"deleted": 
+			if deleted_file_color != Color.WHITE:
+				item.set_custom_color(0, deleted_file_color)
+		"new file":
+			if new_file_color != Color.WHITE:
+				item.set_custom_color(0, new_file_color)
+		_:
+			print_debug(" >>> type: ", type)
 	
 	# 文件名
 	file = file.trim_prefix("\t")
-	item.set_text(0, file + ("" if type == "" else " (%s)" % type ) )
+	item.set_text(0, file + ("" if type == "" else " (%s)" % type.capitalize() ) )
 	item.set_tooltip_text(0, file)
 	item.set_meta("file", file)
 	item.set_meta("item_file", item_file)

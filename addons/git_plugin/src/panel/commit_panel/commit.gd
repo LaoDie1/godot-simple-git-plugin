@@ -26,9 +26,6 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 #  内置
 #============================================================
 func _ready() -> void:
-	if not GitPluginConst.enabled_plugin:
-		return
-	
 	# TODO 对两个 OptionButton 添加切换远程名称和分支的功能
 	
 	# 远程仓库名

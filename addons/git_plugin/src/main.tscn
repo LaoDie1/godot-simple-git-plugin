@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/git_plugin/src/main.gd" id="1_g7vdx"]
 [ext_resource type="PackedScene" uid="uid://b6m25ar08vbba" path="res://addons/git_plugin/src/panel/commit_panel/commit_panel.tscn" id="2_hklok"]
-[ext_resource type="PackedScene" uid="uid://b0mo6ij8gieuf" path="res://addons/git_plugin/src/panel/init_panel.tscn" id="2_ofyrm"]
+[ext_resource type="PackedScene" uid="uid://b0mo6ij8gieuf" path="res://addons/git_plugin/src/panel/init_panel/init_panel.tscn" id="3_tn6tc"]
 
 [node name="Git" type="Control"]
 clip_contents = true
@@ -46,7 +46,7 @@ focus_mode = 0
 text = "Test"
 metadata/_edit_use_anchors_ = true
 
-[node name="InitPanel" parent="." instance=ExtResource("2_ofyrm")]
+[node name="InitPanel" parent="." instance=ExtResource("3_tn6tc")]
 unique_name_in_owner = true
 layout_mode = 1
 

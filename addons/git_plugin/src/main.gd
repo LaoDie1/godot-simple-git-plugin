@@ -17,11 +17,6 @@ extends Control
 #============================================================
 #  内置
 #============================================================
-func _init() -> void:
-	if not Engine.is_editor_hint():
-		GitPluginConst.enabled_plugin = true
-
-
 func _ready() -> void:
 	commit_panel.visible = not init_panel.visible
 

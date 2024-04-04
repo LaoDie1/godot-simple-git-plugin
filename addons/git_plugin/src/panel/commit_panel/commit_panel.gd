@@ -9,7 +9,14 @@
 extends Panel
 
 
+@onready var tab_container = %TabContainer
 @onready var commit = %Commit
-@onready var log: VBoxContainer = %Log
-@onready var remotes: VBoxContainer = %Remotes
+@onready var log = %Log
+@onready var remotes = %Remotes
+
+
+func _ready():
+	var remote_list = await GitPlugin_Remote.list()
+	if remote_list.is_empty():
+		tab_container.current_tab = remotes.get_index()
 

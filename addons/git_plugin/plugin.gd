@@ -1,3 +1,10 @@
+#============================================================
+#    Plugin
+#============================================================
+# - author: zhangxuetu
+# - datetime: 2024-04-04 20:57:40
+# - version: 4.2.1.stable
+#============================================================
 @tool
 extends EditorPlugin
 
@@ -8,15 +15,17 @@ var plugin_control : GitPlugin_Main
 
 
 func _enter_tree() -> void:
-	GitPluginConst.enabled_plugin = true
 	plugin_control = MAIN.instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, plugin_control)
 	
+	# 文件新增/删除后
+	EditorInterface.get_resource_filesystem() \
+		.filesystem_changed.connect(update_commit_files.bind(null), Object.CONNECT_DEFERRED)
+	# 保存资源后
 	resource_saved.connect(update_commit_files, Object.CONNECT_DEFERRED)
 
 
 func _exit_tree() -> void:
-	GitPluginConst.enabled_plugin = false
 	remove_control_from_docks(plugin_control)
 
 

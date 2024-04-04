@@ -22,9 +22,6 @@ func _init():
 	visibility_changed.connect(update_log)
 
 func _ready() -> void:
-	if not GitPluginConst.enabled_plugin:
-		return
-	
 	log_number_option.clear()
 	for item in ["10", "20", "50", "100", "All"]:
 		log_number_option.add_item(item)
@@ -41,7 +38,7 @@ func _ready() -> void:
 #============================================================
 ## 更新日志列表
 func update_log():
-	if not visible:
+	if not visible or log_item_tree == null:
 		return
 	
 	log_item_tree.clear()
