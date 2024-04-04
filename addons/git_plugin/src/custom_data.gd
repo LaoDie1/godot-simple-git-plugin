@@ -5,7 +5,6 @@
 # - datetime: 2024-04-02 21:09:14
 # - version: 4.2.1.stable
 #============================================================
-@tool
 class_name GitPluginConst
 
 

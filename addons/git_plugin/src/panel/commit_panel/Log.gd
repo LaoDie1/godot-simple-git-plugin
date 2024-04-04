@@ -17,6 +17,9 @@ extends VBoxContainer
 #============================================================
 #  内置
 #============================================================
+func _init():
+	visibility_changed.connect(update_log)
+
 func _ready() -> void:
 	if not GitPluginConst.enabled_plugin:
 		return
@@ -33,6 +36,9 @@ func _ready() -> void:
 #============================================================
 ## 更新日志列表
 func update_log():
+	if not visible:
+		return
+	
 	log_item_tree.clear()
 	tree_root = log_item_tree.create_item()
 	

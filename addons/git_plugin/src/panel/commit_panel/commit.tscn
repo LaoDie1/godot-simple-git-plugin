@@ -342,6 +342,7 @@ text = "Push"
 [connection signal="pressed" from="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3/AddAllStagedFiles" to="." method="_on_add_all_staged_files_pressed"]
 [connection signal="actived_file" from="VSplitContainer/VSplitContainer2/VBoxContainer2/StagedChangesFileTree" to="." method="_on_staged_changes_file_tree_actived_file"]
 [connection signal="edited_file" from="VSplitContainer/VSplitContainer2/VBoxContainer2/StagedChangesFileTree" to="." method="edit_file"]
+[connection signal="pressed" from="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/HBoxContainer/RemoveAll" to="." method="_on_remove_all_pressed"]
 [connection signal="actived_file" from="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree" to="." method="_on_committed_file_tree_actived_file"]
 [connection signal="pressed" from="HBoxContainer2/UpdateFiles" to="." method="update"]
 [connection signal="pressed" from="HBoxContainer2/CommitChanges" to="." method="_on_commit_changes_pressed"]
