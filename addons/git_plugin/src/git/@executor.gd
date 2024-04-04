@@ -54,7 +54,7 @@ func _init() -> void:
 static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
 	print()
 	print("=".repeat(60))
-	print_debug("Execute Command: ", " ".join(command) )
+	print_debug("执行命令: ", " ".join(command) )
 	print()
 	
 	var id = instance._execute(command.duplicate(true))
