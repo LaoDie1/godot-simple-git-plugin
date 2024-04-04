@@ -8,6 +8,7 @@
 @tool
 extends VBoxContainer
 
+
 const ICON = preload("res://addons/git_plugin/src/icon.tres")
 
 
@@ -59,6 +60,9 @@ func add_item(remote_name: String, url: String):
 
 
 func update():
+	_urls.clear()
+	remote_url_tree.clear()
+	_root = remote_url_tree.create_item()
 	var result = await GitPlugin_Remote.verbose()
 	for item: String in result:
 		if item != "":
@@ -80,6 +84,6 @@ func _on_remote_url_tree_button_clicked(item: TreeItem, column: int, id: int, mo
 	if mouse_button_index == MOUSE_BUTTON_LEFT:
 		if id == 0: # 删除
 			var remote_name = item.get_text(0)
-			print_debug("移除远程链接：", remote_name)
-			#GitPlugin_Remote.remove(remote_name)
-			#_root.remove_child(item)
+			await GitPlugin_Remote.remove(remote_name)
+			update()
+

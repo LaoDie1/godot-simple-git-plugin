@@ -24,12 +24,7 @@ func _ready() -> void:
 #============================================================
 #  连接信号
 #============================================================
-func _on_test_pressed() -> void:
-	var result = await GitPlugin_Log.execute()
-	print_debug( JSON.stringify(result, "\t") )
-
-
 func _on_init_panel_visibility_changed() -> void:
 	if commit_panel:
 		commit_panel.commit.update()
-		commit_panel.visible = not init_panel.visible
+		commit_panel.visible = not init_panel.visible 

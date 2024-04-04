@@ -139,10 +139,10 @@ func add_item(item_file: String):
 		
 		elif result.get_string("path") != "":
 			file = result.get_string("path")
-			type = result.get_string("type")
-		
-	else:
+	
+	if file == "":
 		file = item_file
+	if type == "":
 		type = "new file"
 	
 	match type.to_lower():
@@ -160,7 +160,7 @@ func add_item(item_file: String):
 	
 	# 文件名
 	file = file.trim_prefix("\t")
-	item.set_text(0, file + ("" if type == "" else " (%s)" % type.capitalize() ) )
+	item.set_text(0, file + ("" if type == "" else " (%s)" % type ) )
 	item.set_tooltip_text(0, file)
 	item.set_meta("file", file)
 	item.set_meta("item_file", item_file)

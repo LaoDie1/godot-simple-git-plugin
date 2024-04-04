@@ -11,7 +11,7 @@ class_name GitPlugin_Log
 
 ## 获取最近几条日志的信息。item_number 如果为 0 则返回所有日志信息
 static func execute(item_number: int = 0):
-	# 格式化输出
+	# 格式化输出（下面命令中的 \t 不能去掉，否则一些中文乱码会导致换行符丢失，需要加个字符分隔一下）
 	var result
 	if item_number > 0:
 		result = await GitPlugin_Executor.execute([

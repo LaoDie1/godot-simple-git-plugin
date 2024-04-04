@@ -10,7 +10,17 @@ extends EditorScript
 
 
 func _run() -> void:
+	pass
 	
+	
+
+
+func test02():
+	var text : String = "娣诲姞鎻掍欢鍒扮紪杈戝櫒涓?"
+	print( str(text.unicode_at(0)) )
+
+
+func test01():
 	var regex = RegEx.new()
 	regex.compile(
 		"((?<type>\\w+):\\s+)?"
@@ -33,10 +43,4 @@ func _run() -> void:
 	return
 	
 	
-	
-	var text : String = "娣诲姞鎻掍欢鍒扮紪杈戝櫒涓?"
-	
-	print( str(text.unicode_at(0)) )
-	
-
 

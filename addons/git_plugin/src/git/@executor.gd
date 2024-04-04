@@ -54,7 +54,7 @@ func _init() -> void:
 static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
 	print()
 	print("=".repeat(60))
-	print_debug("执行命令: ", " ".join(command) )
+	print_debug(" >>> 执行命令: ", " ".join(command) )
 	print()
 	
 	var id = instance._execute(command.duplicate(true))
@@ -114,7 +114,7 @@ func _on_shell_request_finish(id, command, output):
 	var result : String = output[0]
 	self._id_to_request_result_cache[id] = result
 	
-	print_debug(" >>> 执行结束: ", " ".join(command), "")
+	print_debug(" <<< 执行结束: ", " ".join(command), "")
 	
 	if self.thread != null:
 		self.thread.wait_to_finish()

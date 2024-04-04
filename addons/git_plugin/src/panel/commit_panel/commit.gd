@@ -20,6 +20,10 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 @onready var commit_message_prompt_animation_player = %CommitMessagePromptAnimationPlayer
 @onready var committed_file_tree_animation_player = %CommittedFileTreeAnimationPlayer
 @onready var push_button = %PushButton
+@onready var pull_button = %PullButton
+@onready var unstaged_changes_file_count_label = %UnstagedChangesFileCountLabel
+@onready var staged_files_count_label = %StagedFilesCountLabel
+@onready var committed_file_count_label = %CommittedFileCountLabel
 
 
 #============================================================
@@ -63,20 +67,26 @@ func update():
 		return
 	
 	var data = await GitPlugin_Status.execute()
+	# 暂存
 	var untracked_files : Array = data.get("Untracked files:", [])
 	var changes_not_staged_for_commit : Array = data.get("Changes not staged for commit:", [])
 	staged_changes_file_tree.init_items(changes_not_staged_for_commit)
+	staged_files_count_label.text = "(%d)" % changes_not_staged_for_commit.size()
 	
 	# 过滤重复的文件
 	var filter_method = func(item_file):
 		return not staged_changes_file_tree._file_to_item_dict.has(item_file)
-	var files = untracked_files.filter(filter_method)
-	files.append_array(changes_not_staged_for_commit.filter(filter_method))
+	var unstaged_changes_files = untracked_files.filter(filter_method)
+	unstaged_changes_files.append_array(changes_not_staged_for_commit.filter(filter_method))
 	
 	# 未提交
-	unstaged_changes_file_tree.init_items(files)
+	unstaged_changes_file_tree.init_items(unstaged_changes_files)
+	unstaged_changes_file_count_label.text = "(%d)" % unstaged_changes_files.size()
+	
 	# 已提交
-	committed_file_tree.init_items(data.get("Changes to be committed:", []))
+	var committed_files : Array = data.get("Changes to be committed:", [])
+	committed_file_tree.init_items(committed_files)
+	committed_file_count_label.text = "(%d)" % committed_files.size()
 
 
 func print_data(result, desc):
@@ -152,6 +162,12 @@ func _on_push_pressed() -> void:
 	push_button.disabled = false
 
 
+func _on_pull_button_pressed():
+	pull_button.disabled = true
+	await GitPlugin_Pull.execute()
+	pull_button.disabled = false
+
+
 func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
 	staged_changes_file_tree.remove_item(item_file)
 	committed_file_tree.add_item(item_file)
@@ -168,5 +184,4 @@ func _on_committed_file_tree_actived_file(item_file, file):
 	staged_changes_file_tree.add_item(item_file)
 	committed_file_tree.remove_item(item_file)
 	GitPlugin_Restore.execute([ file ])
-
 

@@ -14,8 +14,7 @@ func print_data(data):
 
 
 func _ready() -> void:
-	var output = []
+	print(await GitPlugin_Status.execute())
+	#print_data( await GitPlugin_Status.execute() )
 	
-	OS.execute("CMD.exe", ["/C", 'git commit -m  test'], output)
-	print(output[0])
 	

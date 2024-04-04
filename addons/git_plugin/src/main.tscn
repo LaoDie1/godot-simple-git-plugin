@@ -28,27 +28,8 @@ grow_vertical = 2
 unique_name_in_owner = true
 layout_mode = 1
 
-[node name="Test" type="Button" parent="CommitPanel"]
-visible = false
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.128038
-anchor_top = 0.923611
-anchor_right = 0.128038
-anchor_bottom = 0.923611
-offset_left = -100.5
-offset_top = -31.5
-offset_right = 100.5
-offset_bottom = 31.5
-grow_horizontal = 2
-grow_vertical = 2
-focus_mode = 0
-text = "Test"
-metadata/_edit_use_anchors_ = true
-
 [node name="InitPanel" parent="." instance=ExtResource("3_tn6tc")]
 unique_name_in_owner = true
 layout_mode = 1
 
-[connection signal="pressed" from="CommitPanel/Test" to="." method="_on_test_pressed"]
 [connection signal="visibility_changed" from="InitPanel" to="." method="_on_init_panel_visibility_changed"]
