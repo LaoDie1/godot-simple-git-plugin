@@ -10,6 +10,8 @@ class_name GitPlugin_FileTree
 extends Tree
 
 
+## item_file: 原始的带有其他信息的文件名
+## file: 纯文件名，没有其他信息
 signal edited_file(item_file: String, file: String)
 signal actived_file(item_file: String, file: String)
 
@@ -194,11 +196,18 @@ func set_checked(item: TreeItem, checked: bool, item_file: String = ""):
 
 
 ## 获取选中的文件
-func get_selected_file() -> PackedStringArray:
+func get_selected_item_file() -> PackedStringArray:
 	var list = PackedStringArray()
 	for item in _root.get_children():
 		if item.is_checked(0):
 			list.append(item.get_meta("item_file"))
+	return list
+
+func get_selected_files() -> PackedStringArray:
+	var list = PackedStringArray()
+	for item in _root.get_children():
+		if item.is_checked(0):
+			list.append(item.get_meta("file"))
 	return list
 
 

@@ -43,17 +43,7 @@ func _init() -> void:
 			assert(false, "不支持这个平台：" + OS.get_name())
 	
 	# 命令处理完成
-	shell.request_finished.connect(
-		func(id, command, output):
-			var result : String = output[0]
-			self._id_to_request_result_cache[id] = result
-			
-			print_debug(" >>> ", command, " 执行完成")
-			
-			if self.thread != null:
-				self.thread.wait_to_finish()
-				self.thread = null
-	, Object.CONNECT_DEFERRED)
+	shell.request_finished.connect(_on_shell_request_finish, Object.CONNECT_DEFERRED)
 
 
 #============================================================
@@ -114,4 +104,18 @@ func get_request_result(id: int, wait_time: float) -> Variant:
 			_id_to_request_result_cache.erase(id) # 请求到结果，清除结果缓存
 			return result
 	return null
+
+
+#============================================================
+#  连接信号
+#============================================================
+func _on_shell_request_finish(id, command, output):
+	var result : String = output[0]
+	self._id_to_request_result_cache[id] = result
+	
+	print_debug(" >>> 执行完成: ", " ".join(command), "")
+	
+	if self.thread != null:
+		self.thread.wait_to_finish()
+		self.thread = null
 

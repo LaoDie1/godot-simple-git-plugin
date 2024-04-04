@@ -30,6 +30,7 @@ func _ready() -> void:
 #============================================================
 #  自定义
 #============================================================
+## 更新文件列表
 func update():
 	var data = await GitPlugin_Status.execute()
 	var untracked_files : Array = data.get("Untracked files:", [])
@@ -54,8 +55,11 @@ func print_data(result, desc):
 
 
 ## 点击文件
-func active_file(item_file: String, file: String):
+func edit_file(item_file: String, file: String):
 	if Engine.is_editor_hint() and ResourceLoader.exists(file):
+		if not file.begins_with("res://"):
+			file = "res://" + file
+		
 		match file.get_extension():
 			"tres", "res", "gd":
 				var res = load(file)
@@ -65,49 +69,36 @@ func active_file(item_file: String, file: String):
 		
 		if ResourceLoader.exists(file):
 			print_debug("编辑文件：", file)
-			EditorInterface.select_file(file)
 			EditorInterface.get_file_system_dock().navigate_to_path(file)
+			EditorInterface.select_file(file)
 
 
 #============================================================
 #  连接信号
 #============================================================
-func _on_add_all_pressed() -> void:
-	staged_changes_file_tree.add_items(
-		unstaged_changes_file_tree.get_selected_file()
-	)
-	unstaged_changes_file_tree.clear_select_items()
+func _on_add_all_unstaged_file_pressed() -> void:
+	var files = unstaged_changes_file_tree.get_selected_files()
+	if not files.is_empty():
+		var result = await GitPlugin_Add.execute(files)
+		update()
 
 
 func _on_remove_all_pressed() -> void:
-	unstaged_changes_file_tree.add_items(
-		staged_changes_file_tree.get_selected_file()
-	)
-	staged_changes_file_tree.clear_select_items()
+	var files = staged_changes_file_tree.get_selected_files()
+	if not files.is_empty():
+		var result = await GitPlugin_Restore.execute(files)
+		update()
 
 
-func _on_add_staged_files_pressed() -> void:
-	var files = staged_changes_file_tree.get_selected_file()
-	if files.is_empty():
-		return
-	
-	# 获取文件列表
-	var list = []
-	for file in staged_changes_file_tree.get_selected_file():
-		var idx = file.find(":")
-		if idx > -1:
-			file = file.substr(idx + 1)
-		list.append('\"' + file.strip_edges() + '\"')
-	
-	var result = await GitPlugin_Add.execute(list)
-	print_data(result, "已添加")
-	
-	# 添加到树中
-	update.call_deferred()
+func _on_add_all_staged_files_pressed() -> void:
+	var files = staged_changes_file_tree.get_selected_files()
+	if not files.is_empty():
+		var result = await GitPlugin_Add.execute(files)
+		update()
 
 
 func _on_commit_changes_pressed() -> void:
-	if committed_file_tree.get_selected_file().is_empty():
+	if committed_file_tree.get_selected_item_file().is_empty():
 		push_error("没有选中文件")
 		return
 	if commit_message_text_edit.text.strip_edges() == "":
@@ -120,19 +111,28 @@ func _on_commit_changes_pressed() -> void:
 	)
 	
 	commit_message_text_edit.text = ""
-	update.call_deferred()
+	update()
 
 
 func _on_push_pressed() -> void:
 	GitPlugin_Push.execute()
 
 
-func _on_unstaged_changes_file_tree_edited_file(item_file: String, file: String) -> void:
-	unstaged_changes_file_tree.remove_item(item_file)
-	staged_changes_file_tree.add_item(item_file)
-
-
-func _on_staged_changes_file_tree_edited_file(item_file: String, file: String) -> void:
-	unstaged_changes_file_tree.add_item(item_file)
+func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
 	staged_changes_file_tree.remove_item(item_file)
+	committed_file_tree.add_item(item_file)
+	GitPlugin_Add.execute([ file ])
+
+
+func _on_unstaged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
+	unstaged_changes_file_tree.remove_item(item_file)
+	committed_file_tree.add_item(item_file)
+	GitPlugin_Add.execute([file])
+
+
+func _on_committed_file_tree_actived_file(item_file, file):
+	staged_changes_file_tree.add_item(item_file)
+	committed_file_tree.remove_item(item_file)
+	GitPlugin_Restore.execute([ file ])
+
 

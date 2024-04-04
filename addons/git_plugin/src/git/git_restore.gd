@@ -9,7 +9,11 @@ class_name GitPlugin_Restore
 
 
 static func execute(files: Array):
-	var command = ["git restore"]
+	if files.is_empty():
+		return
+	
+	var command = ["git restore --staged"]
 	command.append_array(files)
 	var result = await GitPlugin_Executor.execute(command)
 	return result["output"]
+

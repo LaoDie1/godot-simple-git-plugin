@@ -9,12 +9,12 @@
 class_name GitPlugin_Add
 
 
-static func execute(params):
+static func execute(file_or_files):
 	var command = ["git", "add"]
-	if params is Array or params is PackedStringArray:
-		command.append_array(params)
-	elif params is String:
-		command.append(params)
+	if file_or_files is Array or file_or_files is PackedStringArray:
+		command.append_array(file_or_files)
+	elif file_or_files is String:
+		command.append(file_or_files)
 	else:
 		assert(false, "错误的参数类型")
 	var result = await GitPlugin_Executor.execute(command)

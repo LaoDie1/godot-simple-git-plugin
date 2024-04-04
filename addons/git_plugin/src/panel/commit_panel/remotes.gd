@@ -17,10 +17,17 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 @onready var _root : TreeItem = remote_url_tree.create_item()
 
 
+var _url_regex : RegEx = RegEx.new()
+var _urls : Dictionary = {}
+
 
 #============================================================
 #  内置
 #============================================================
+func _init() -> void:
+	_url_regex.compile("(?<url>.*?)\\s+\\(\\w+\\)")
+
+
 func _ready() -> void:
 	remote_url_tree.columns = 2
 	remote_url_tree.hide_root = true
@@ -29,13 +36,6 @@ func _ready() -> void:
 	remote_url_tree.column_titles_visible = true
 	remote_url_tree.set_column_title(0, "Name")
 	remote_url_tree.set_column_title(1, "URL")
-	remote_url_tree.button_clicked.connect(
-		func(item: TreeItem, column: int, id: int, mouse_button_index: int):
-			if mouse_button_index == MOUSE_BUTTON_LEFT:
-				if id == 0: # 删除
-					_root.remove_child(item)
-					
-	)
 	
 	update()
 
@@ -45,10 +45,17 @@ func _ready() -> void:
 #  自定义
 #============================================================
 func add_item(remote_name: String, url: String):
-	var item = remote_url_tree.create_item(_root)
-	item.set_text(0, remote_name)
-	item.set_text(1, url)
-	item.add_button(1, ICON.get_icon("Remove", "EditorIcons"))
+	var re = _url_regex.search(url)
+	if re:
+		url = re.get_string("url")
+	
+	if not _urls.has(url):
+		_urls[url] = null
+		
+		var item = remote_url_tree.create_item(_root)
+		item.set_text(0, remote_name)
+		item.set_text(1, url)
+		item.add_button(1, ICON.get_icon("Remove", "EditorIcons"))
 
 
 func update():
@@ -68,3 +75,11 @@ func update():
 func _on_add_remote_url_button_pressed() -> void:
 	add_remote_window.popup_centered()
 
+
+func _on_remote_url_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
+	if mouse_button_index == MOUSE_BUTTON_LEFT:
+		if id == 0: # 删除
+			var remote_name = item.get_text(0)
+			print_debug("移除远程链接：", remote_name)
+			#GitPlugin_Remote.remove(remote_name)
+			#_root.remove_child(item)

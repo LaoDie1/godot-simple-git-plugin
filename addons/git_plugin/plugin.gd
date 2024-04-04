@@ -24,10 +24,9 @@ var _updating : bool = false
 func update_commit_files(resource):
 	if _updating:
 		return
+	
 	_updating = true
 	await Engine.get_main_loop().process_frame
-	
 	plugin_control.commit_panel.commit.update()
-	
 	_updating = false
 
