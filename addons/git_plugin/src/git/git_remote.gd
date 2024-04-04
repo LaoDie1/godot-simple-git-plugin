@@ -14,7 +14,7 @@ static func verbose():
 	return result["output"]
 
 ## 仓库名列表
-static func list():
+static func list() -> Array:
 	var result = await GitPlugin_Executor.execute(["git remote"])
 	return result["output"]
 

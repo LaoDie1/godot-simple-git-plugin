@@ -47,6 +47,7 @@ visible = false
 layout_mode = 2
 
 [node name="Prompt" type="Label" parent="MarginContainer/VBoxContainer"]
+visible = false
 modulate = Color(1, 1, 1, 0.498039)
 layout_mode = 2
 text = "  Message..."

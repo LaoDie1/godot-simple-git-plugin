@@ -8,6 +8,7 @@
 @tool
 extends VBoxContainer
 
+const ICON = preload("res://addons/git_plugin/src/icon.tres")
 
 @onready var branch_name_option = %BranchNameOption
 @onready var remote_name_option = %RemoteNameOption
@@ -26,8 +27,15 @@ extends VBoxContainer
 func _ready() -> void:
 	if not GitPluginConst.enabled_plugin:
 		return
-	update()
 	
+	# 远程仓库名
+	var remote_name_list = await GitPlugin_Remote.list()
+	if not remote_name_list.is_empty():
+		remote_name_option.clear()
+		for item in remote_name_list:
+			remote_name_option.add_item(item)
+	
+	# 分支信息
 	var current_branch = await GitPlugin_Branch.show_current()
 	var branch_list = await GitPlugin_Branch.list()
 	if not branch_list.is_empty():
@@ -37,9 +45,13 @@ func _ready() -> void:
 		item = item.trim_prefix("*").strip_edges()
 		idx += 1
 		branch_name_option.add_item(item)
+		branch_name_option.set_item_metadata(idx, item)
+		branch_name_option.set_item_icon(idx, ICON.get_icon("VcsBranches", "EditorIcons"))
 		if item == current_branch:
 			branch_name_option.selected = idx
 	
+	# call_deferred 用于等待节点显示出来
+	update.call_deferred()
 
 
 #============================================================
@@ -47,6 +59,8 @@ func _ready() -> void:
 #============================================================
 ## 更新文件列表
 func update():
+	if not visible:
+		return
 	
 	var data = await GitPlugin_Status.execute()
 	var untracked_files : Array = data.get("Untracked files:", [])

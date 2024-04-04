@@ -25,6 +25,7 @@ func _ready() -> void:
 	if not GitPluginConst.enabled_plugin:
 		return
 	
+	log_number_option.clear()
 	for item in ["10", "20", "50", "100", "All"]:
 		log_number_option.add_item(item)
 	

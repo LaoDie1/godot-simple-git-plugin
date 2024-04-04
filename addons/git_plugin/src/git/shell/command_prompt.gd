@@ -13,5 +13,7 @@ func _execute(command: Array):
 	var output = []
 	var c = ["/C"]
 	c.append_array(command)
-	OS.execute("CMD.exe", c, output)
+	var err = OS.execute("CMD.exe", c, output)
+	if err != OK:
+		printerr("执行失败：", err, " ", error_string(err) )
 	return output
