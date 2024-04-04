@@ -10,8 +10,8 @@ class_name GitPlugin_Main
 extends Control
 
 
-@onready var init_panel: Panel = %InitPanel
-@onready var commit_panel: Panel = %CommitPanel
+@onready var init_panel = %InitPanel
+@onready var commit_panel = %CommitPanel
 
 
 #============================================================
@@ -31,5 +31,5 @@ func _on_test_pressed() -> void:
 
 func _on_init_panel_visibility_changed() -> void:
 	if commit_panel:
-		commit_panel.update()
+		commit_panel.commit.update()
 		commit_panel.visible = not init_panel.visible
