@@ -10,7 +10,8 @@ class_name GitPlugin_FileTree
 extends Tree
 
 
-signal action_file(item_file: String)
+signal actived_file(item_file: String, file: String)
+
 
 const ICON = preload("res://addons/git_plugin/src/icon.tres")
 
@@ -51,8 +52,8 @@ func _init() -> void:
 			# 双击
 			var item = get_selected()
 			var item_file = item.get_meta("item_file")
-			action_file.emit(item_file)
-			#set_checked(item, not item.is_checked(0))
+			var file = item.get_meta("file")
+			actived_file.emit(item_file, file)
 	)
 	item_selected.connect(
 		func():
@@ -214,11 +215,11 @@ func button_click(item: TreeItem, column: int, id: int, mouse_button_index: int)
 	var file : String = item.get_meta("file")
 	var item_file : String = item.get_meta("item_file")
 	if id == enum_edit:
-		print("编辑 ", file)
+		actived_file.emit(item_file, file)
 	elif id == enum_delete:
 		print("删除 ", file)
 	elif id == enum_action:
-		action_file.emit(item_file)
+		actived_file.emit(item_file, file)
 	else:
 		print("点击", id)
 	

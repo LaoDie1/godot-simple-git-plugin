@@ -12,5 +12,7 @@ extends EditorScript
 func _run() -> void:
 	var text : String = "娣诲姞鎻掍欢鍒扮紪杈戝櫒涓?"
 	
-	print(text.unicode_at(0))
+	print( str(text.unicode_at(0)) )
 	
+
+

@@ -6,6 +6,7 @@
 # - version: 4.2.1.stable
 #============================================================
 @tool
+class_name GitPlugin_Main
 extends Control
 
 
@@ -35,5 +36,5 @@ func _on_test_pressed() -> void:
 
 func _on_init_panel_visibility_changed() -> void:
 	if commit_panel:
-		commit_panel.update_files()
+		commit_panel.update()
 		commit_panel.visible = not init_panel.visible

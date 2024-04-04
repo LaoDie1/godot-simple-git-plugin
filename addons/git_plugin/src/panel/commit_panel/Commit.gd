@@ -23,15 +23,14 @@ extends VBoxContainer
 func _ready() -> void:
 	if not GitPluginConst.enabled_plugin:
 		return
-	update_files.call_deferred()
+	update.call_deferred()
 
 
 
 #============================================================
 #  自定义
 #============================================================
-func update_files():
-	
+func update():
 	var data = await GitPlugin_Status.execute()
 	var untracked_files : Array = data.get("Untracked files:", [])
 	var changes_not_staged_for_commit : Array = data.get("Changes not staged for commit:", [])
@@ -54,6 +53,20 @@ func print_data(result, desc):
 	print_debug("   ", desc)
 
 
+## 点击文件
+func active_file(item_file: String, file: String):
+	if Engine.is_editor_hint():
+		match file.get_extension():
+			"tres", "res", "gd":
+				var res = load(file)
+				EditorInterface.edit_resource(res)
+			"tscn", "scn":
+				EditorInterface.open_scene_from_path(file)
+		
+		if ResourceLoader.exists(file):
+			print_debug("编辑文件：", file)
+			EditorInterface.get_file_system_dock().navigate_to_path(file)
+
 
 #============================================================
 #  连接信号
@@ -63,16 +76,6 @@ func _on_add_all_pressed() -> void:
 		unstaged_changes_file_tree.get_selected_file()
 	)
 	unstaged_changes_file_tree.clear_select_items()
-
-
-func _on_unstaged_changes_file_tree_action_file(item_file: String) -> void:
-	unstaged_changes_file_tree.remove_item(item_file)
-	staged_changes_file_tree.add_item(item_file)
-
-
-func _on_staged_changes_file_tree_action_file(item_file: String) -> void:
-	staged_changes_file_tree.remove_item(item_file)
-	unstaged_changes_file_tree.add_item(item_file)
 
 
 func _on_remove_all_pressed() -> void:
@@ -99,7 +102,7 @@ func _on_add_staged_files_pressed() -> void:
 	print_data(result, "已添加")
 	
 	# 添加到树中
-	update_files.call_deferred()
+	update.call_deferred()
 
 
 func _on_commit_changes_pressed() -> void:
@@ -116,7 +119,7 @@ func _on_commit_changes_pressed() -> void:
 	)
 	
 	commit_message_text_edit.text = ""
-	update_files.call_deferred()
+	update.call_deferred()
 
 
 func _on_push_pressed() -> void:
