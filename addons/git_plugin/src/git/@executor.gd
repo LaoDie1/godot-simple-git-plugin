@@ -114,7 +114,7 @@ func _on_shell_request_finish(id, command, output):
 	var result : String = output[0]
 	self._id_to_request_result_cache[id] = result
 	
-	print_debug(" >>> 执行完成: ", " ".join(command), "")
+	print_debug(" >>> 执行结束: ", " ".join(command), "")
 	
 	if self.thread != null:
 		self.thread.wait_to_finish()
