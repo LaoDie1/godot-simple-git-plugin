@@ -11,8 +11,8 @@ class_name GitPlugin_Log
 
 static func execute():
 	# 格式化输出
-	var output = await GitPlugin_Console.execute(['git log --pretty="%H;;;%cd;;;%s\t" --date=iso'])
-	return _handle_result(output)
+	var result = await GitPlugin_Executor.execute(['git log --pretty="%H;;;%cd;;;%s\t" --date=iso'])
+	return _handle_result(result["output"])
 
 
 # 处理结果
@@ -28,3 +28,4 @@ static func _handle_result(output):
 				"desc": items[2].strip_edges(),
 			})
 	return list
+

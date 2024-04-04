@@ -17,4 +17,5 @@ static func execute(params):
 		command.append(params)
 	else:
 		assert(false, "错误的参数类型")
-	return await GitPlugin_Console.execute(command)
+	var result = await GitPlugin_Executor.execute(command)
+	return result["output"]

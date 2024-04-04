@@ -10,8 +10,9 @@ class_name GitPlugin_Init
 
 
 static func execute(branch_name: String = "master"):
-	var result = await GitPlugin_Console.execute(["git", "init"])
-	GitPlugin_Console.execute(["git", "branch", "-M", branch_name])
+	var init_result = await GitPlugin_Executor.execute(["git", "init"])
+	var branch_result = await GitPlugin_Executor.execute(["git", "branch", "-M", branch_name])
+	
 
 
 

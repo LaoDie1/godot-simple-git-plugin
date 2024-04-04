@@ -48,7 +48,6 @@ metadata/_edit_use_anchors_ = true
 
 [node name="InitPanel" parent="." instance=ExtResource("2_ofyrm")]
 unique_name_in_owner = true
-visible = false
 layout_mode = 1
 
 [connection signal="pressed" from="CommitPanel/Test" to="." method="_on_test_pressed"]

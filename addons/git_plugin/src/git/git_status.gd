@@ -10,7 +10,7 @@ class_name GitPlugin_Status
 
 
 static func get_files():
-	var result = await GitPlugin_Console.execute(["git status -s"])
+	var result = await GitPlugin_Executor.execute(["git status -s"])
 	
 	#第一列字符表示版本库与暂存区之间的比较状态。
 	#第二列字符表示暂存区与工作区之间的比较状态。
@@ -32,8 +32,8 @@ static func get_files():
 
 static func execute():
 	var command = ["git status -u" ]
-	var result = await GitPlugin_Console.execute(command)
-	return _handle_result(result)
+	var result = await GitPlugin_Executor.execute(command)
+	return _handle_result(result["output"])
 
 
 static var _block_regex: RegEx:

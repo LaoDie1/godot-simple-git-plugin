@@ -1,16 +1,15 @@
 #============================================================
-#    Git Branch
+#    Git Restore
 #============================================================
 # - author: zhangxuetu
-# - datetime: 2024-04-03 09:38:34
+# - datetime: 2024-04-04 13:55:15
 # - version: 4.2.1.stable
 #============================================================
-class_name GitPlugin_Branch
+class_name GitPlugin_Restore
 
 
-## 所有分支
-static func all():
-	var result = await GitPlugin_Executor.execute(["git", "branch", "-a"])
+static func execute(files: Array):
+	var command = ["git restore"]
+	command.append_array(files)
+	var result = await GitPlugin_Executor.execute(command)
 	return result["output"]
-
-

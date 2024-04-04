@@ -9,4 +9,5 @@ class_name GitPlugin_Reflog
 
 
 static func execute():
-	return await GitPlugin_Console.execute(["git", "reflog"])
+	var result = await GitPlugin_Executor.execute(["git", "reflog"])
+	return result["output"]

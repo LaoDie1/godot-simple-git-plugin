@@ -55,7 +55,7 @@ func print_data(result, desc):
 
 ## 点击文件
 func active_file(item_file: String, file: String):
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() and ResourceLoader.exists(file):
 		match file.get_extension():
 			"tres", "res", "gd":
 				var res = load(file)
@@ -65,6 +65,7 @@ func active_file(item_file: String, file: String):
 		
 		if ResourceLoader.exists(file):
 			print_debug("编辑文件：", file)
+			EditorInterface.select_file(file)
 			EditorInterface.get_file_system_dock().navigate_to_path(file)
 
 
@@ -124,4 +125,14 @@ func _on_commit_changes_pressed() -> void:
 
 func _on_push_pressed() -> void:
 	GitPlugin_Push.execute()
+
+
+func _on_unstaged_changes_file_tree_edited_file(item_file: String, file: String) -> void:
+	unstaged_changes_file_tree.remove_item(item_file)
+	staged_changes_file_tree.add_item(item_file)
+
+
+func _on_staged_changes_file_tree_edited_file(item_file: String, file: String) -> void:
+	unstaged_changes_file_tree.add_item(item_file)
+	staged_changes_file_tree.remove_item(item_file)
 

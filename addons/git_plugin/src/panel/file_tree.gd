@@ -10,6 +10,7 @@ class_name GitPlugin_FileTree
 extends Tree
 
 
+signal edited_file(item_file: String, file: String)
 signal actived_file(item_file: String, file: String)
 
 
@@ -215,7 +216,7 @@ func button_click(item: TreeItem, column: int, id: int, mouse_button_index: int)
 	var file : String = item.get_meta("file")
 	var item_file : String = item.get_meta("item_file")
 	if id == enum_edit:
-		actived_file.emit(item_file, file)
+		edited_file.emit(item_file, file)
 	elif id == enum_delete:
 		print("删除 ", file)
 	elif id == enum_action:

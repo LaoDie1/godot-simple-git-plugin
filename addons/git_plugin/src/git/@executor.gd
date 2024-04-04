@@ -1,13 +1,13 @@
 #============================================================
-#    Console
+#    Executor
 #============================================================
 # - author: zhangxuetu
 # - datetime: 2024-04-02 13:09:01
 # - version: 4.2.1.stable
 #============================================================
-# 控制台，接收用户命令，进行异步处理
+# 接收用户命令，进行异步处理
 # 这个节点不能是 Node 类型，否则添加到场景后，异步功能不能使用
-class_name GitPlugin_Console
+class_name GitPlugin_Executor
 extends RefCounted
 
 
@@ -15,10 +15,10 @@ const CommandPrompt = preload("shell/command_prompt.gd")
 const Terminal = preload("shell/terminal.gd")
 
 
-static var instance : GitPlugin_Console:
+static var instance : GitPlugin_Executor:
 	get:
 		if instance == null:
-			instance = GitPlugin_Console.new()
+			instance = GitPlugin_Executor.new()
 		return instance
 
 static var _incr_id : int = 0
@@ -56,34 +56,40 @@ func _init() -> void:
 	, Object.CONNECT_DEFERRED)
 
 
-
 #============================================================
 #  自定义
 #============================================================
 ## 执行命令
-static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool = true):
+##[br] - [kbd]enable_handle[/kbd] 允许进行数据处理
+static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
+	print()
 	print("=".repeat(60))
 	print_debug("Execute Command: ", " ".join(command) )
 	print()
 	
 	var id = instance._execute(command.duplicate(true))
 	var result = await instance.get_request_result(id, wait_time)
+	
+	# 处理执行结果
+	var data : Dictionary = {}
 	if typeof(result) == TYPE_NIL:
 		printerr("id 为 ", id, " 的 ", command, " 命令结果为 null")
+		data["err"] = FAILED
+		data["output"] = []
+		return data
+	else:
+		data["err"] = OK
 	
-	# 结果为 "" 执行可能失败
-	var output = []
 	if enable_handle:
 		if result != "":
 			# FIXME 需要修复中文乱码问题
-			#result = result.to_ascii_buffer().get_string_from_utf8()
-			output = result.split("\n")
+			data["output"] = result.split("\n")
 		else:
-			output = []
+			data["output"] = []
 	else:
-		output = [result]
+		data["output"] = [result]
 	
-	return output
+	return data
 
 
 # 返回执行时的 id

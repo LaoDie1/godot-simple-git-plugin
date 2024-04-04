@@ -9,8 +9,8 @@ class_name GitPlugin_Diff
 
 
 static func execute():
-	var result = await GitPlugin_Console.execute(["git", "diff"])
-	return _handle_result(result)
+	var result = await GitPlugin_Executor.execute(["git", "diff"])
+	return _handle_result(result["output"])
 
 
 static var _regex_diff : RegEx:
