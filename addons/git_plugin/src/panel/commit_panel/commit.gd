@@ -19,6 +19,7 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 @onready var commit_changes: Button = %CommitChanges
 @onready var commit_message_prompt_animation_player = %CommitMessagePromptAnimationPlayer
 @onready var committed_file_tree_animation_player = %CommittedFileTreeAnimationPlayer
+@onready var push_button = %PushButton
 
 
 #============================================================
@@ -149,7 +150,9 @@ func _on_commit_changes_pressed() -> void:
 
 
 func _on_push_pressed() -> void:
-	GitPlugin_Push.execute()
+	push_button.disabled = true
+	await GitPlugin_Push.execute()
+	push_button.disabled = false
 
 
 func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:

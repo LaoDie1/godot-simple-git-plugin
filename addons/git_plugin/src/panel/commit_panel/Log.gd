@@ -33,7 +33,7 @@ func _ready() -> void:
 	log_item_tree.set_column_title(1, "Date")
 	log_item_tree.set_column_title(2, "Description")
 	
-	update_log()
+	update_log.call_deferred()
 
 
 #============================================================
