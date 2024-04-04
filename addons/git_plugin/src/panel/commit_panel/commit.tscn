@@ -285,6 +285,27 @@ deleted_file_color = Color(1, 1, 1, 1)
 enabled_edit = false
 enabled_delete = false
 
+[node name="CommittedFileTreePrompt" type="ReferenceRect" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = -1.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+border_width = 2.0
+
+[node name="CommittedFileTreeAnimationPlayer" type="AnimationPlayer" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree/CommittedFileTreePrompt"]
+unique_name_in_owner = true
+libraries = {
+"": SubResource("AnimationLibrary_c0tl4")
+}
+
 [node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/VSplitContainer2/VSplitContainer"]
 layout_mode = 2
 

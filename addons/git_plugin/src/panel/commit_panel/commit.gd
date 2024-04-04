@@ -17,6 +17,7 @@ extends VBoxContainer
 @onready var commit_message_text_edit: TextEdit = %CommitMessageTextEdit
 @onready var commit_changes: Button = %CommitChanges
 @onready var commit_message_prompt_animation_player = %CommitMessagePromptAnimationPlayer
+@onready var committed_file_tree_animation_player = %CommittedFileTreeAnimationPlayer
 
 
 #============================================================
@@ -113,11 +114,14 @@ func _on_add_all_staged_files_pressed() -> void:
 
 
 func _on_commit_changes_pressed() -> void:
+	var enabled : bool = true
 	if committed_file_tree.get_selected_item_file().is_empty():
-		push_error("没有选中文件")
-		return
+		committed_file_tree_animation_player.play("flicker")
+		enabled = false
 	if commit_message_text_edit.text.strip_edges() == "":
 		commit_message_prompt_animation_player.play("flicker")
+		enabled = false
+	if not enabled:
 		return
 	
 	# 提交
