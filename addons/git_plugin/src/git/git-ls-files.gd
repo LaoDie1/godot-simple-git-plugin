@@ -14,9 +14,9 @@ static func all():
 
 
 static func get_unstaged_changes():
-	var deleted = await GitPlugin_Executor.execute(["git ls-files --deleted"])
-	var modified = await GitPlugin_Executor.execute(["git ls-files --modified"])
-	var other = await GitPlugin_Executor.execute(["git ls-files", " --other", "-- . ':!.godot/*' "])
+	var deleted = await GitPlugin_Executor.execute(["git ls-files --deleted "])
+	var modified = await GitPlugin_Executor.execute(["git ls-files --modified "])
+	var other = await GitPlugin_Executor.execute(["git ls-files ", " --other ", " -- . ':!.godot/*' "])
 	
 	return {
 		"deleted": deleted["output"],

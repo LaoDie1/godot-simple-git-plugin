@@ -37,7 +37,7 @@ var _file_name_regex : RegEx:
 		if _file_name_regex == null:
 			_file_name_regex = RegEx.new()
 			_file_name_regex.compile(
-				"((?<type>[^:]+):\\s+)?" # 改动类型
+				"(^(?<type>[^:]+):\\s+)?" # 改动类型
 				+ "("
 				+ "(?<origin>.*?)\\s->\\s(?<current>.*)"  # 文件重命名或发生了移动
 				+ "|(?<path>.*)" # 文件内容发生改动

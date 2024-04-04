@@ -10,12 +10,26 @@ class_name GitPlugin_Add
 
 
 static func execute(file_or_files):
-	var command = ["git", "add"]
+	var files : PackedStringArray
 	if file_or_files is Array or file_or_files is PackedStringArray:
-		command.append_array(file_or_files)
+		files = PackedStringArray(file_or_files)
 	elif file_or_files is String:
-		command.append(file_or_files)
+		files = PackedStringArray([file_or_files])
 	else:
 		assert(false, "错误的参数类型")
-	var result = await GitPlugin_Executor.execute(command)
-	return result["output"]
+	
+	# 分批次
+	var batch_count: int = 30
+	var batch_total : int = int(files.size() / batch_count) 
+	batch_total += sign(files.size() % batch_count)
+	
+	# 添加
+	var output = []
+	for i in batch_total:
+		var items = Array(files.slice(i * batch_count, (i+1) * batch_count))
+		var command = ["git", "add"]
+		command.append_array(items)
+		var result = await GitPlugin_Executor.execute(command)
+		output.append(result)
+	
+	return output

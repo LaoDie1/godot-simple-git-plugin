@@ -18,10 +18,9 @@ extends VBoxContainer
 #============================================================
 #  内置
 #============================================================
-func _init():
-	visibility_changed.connect(update_log)
-
 func _ready() -> void:
+	visibility_changed.connect(update_log)
+	
 	log_number_option.clear()
 	for item in ["10", "20", "50", "100", "All"]:
 		log_number_option.add_item(item)
