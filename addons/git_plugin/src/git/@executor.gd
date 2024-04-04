@@ -69,6 +69,7 @@ static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool
 		return data
 	else:
 		data["err"] = OK
+		result = str(result).strip_edges(false, true)
 	
 	if enable_handle:
 		if result != "":

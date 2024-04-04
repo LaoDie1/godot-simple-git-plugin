@@ -9,9 +9,17 @@
 class_name GitPlugin_Log
 
 
-static func execute():
+## 获取最近几条日志的信息。item_number 如果为 0 则返回所有日志信息
+static func execute(item_number: int = 0):
 	# 格式化输出
-	var result = await GitPlugin_Executor.execute(['git log --pretty="%H;;;%cd;;;%s\t" --date=iso'])
+	var result
+	if item_number > 0:
+		result = await GitPlugin_Executor.execute([
+			'git log --pretty="%H;;;%cd;;;%s\t" --date=iso ',
+			"-" + str(item_number)
+		])
+	else:
+		result = await GitPlugin_Executor.execute(['git log --pretty="%H;;;%cd;;;%s\t" --date=iso'])
 	return _handle_result(result["output"])
 
 

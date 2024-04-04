@@ -10,6 +10,9 @@ extends EditorScript
 
 
 func _run() -> void:
+	
+	print("main".split("\n"))
+	
 	var text : String = "娣诲姞鎻掍欢鍒扮紪杈戝櫒涓?"
 	
 	print( str(text.unicode_at(0)) )

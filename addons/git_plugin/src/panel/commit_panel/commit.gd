@@ -9,6 +9,8 @@
 extends VBoxContainer
 
 
+@onready var branch_name_option = %BranchNameOption
+@onready var remote_name_option = %RemoteNameOption
 @onready var unstaged_changes_file_tree: GitPlugin_FileTree = %UnstagedChangesFileTree
 @onready var staged_changes_file_tree: GitPlugin_FileTree = %StagedChangesFileTree
 @onready var committed_file_tree: GitPlugin_FileTree = %CommittedFileTree
@@ -23,8 +25,20 @@ extends VBoxContainer
 func _ready() -> void:
 	if not GitPluginConst.enabled_plugin:
 		return
-	update.call_deferred()
-
+	update()
+	
+	var current_branch = await GitPlugin_Branch.show_current()
+	var branch_list = await GitPlugin_Branch.list()
+	if not branch_list.is_empty():
+		branch_name_option.clear()
+	var idx = -1
+	for item:String in branch_list:
+		item = item.trim_prefix("*").strip_edges()
+		idx += 1
+		branch_name_option.add_item(item)
+		if item == current_branch:
+			branch_name_option.selected = idx
+	
 
 
 #============================================================
@@ -32,8 +46,6 @@ func _ready() -> void:
 #============================================================
 ## 更新文件列表
 func update():
-	if not visible:
-		return
 	
 	var data = await GitPlugin_Status.execute()
 	var untracked_files : Array = data.get("Untracked files:", [])

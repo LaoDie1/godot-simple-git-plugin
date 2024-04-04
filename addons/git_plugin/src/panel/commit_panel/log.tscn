@@ -10,6 +10,21 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_wcwv8")
 
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Commit List"
+
+[node name="Control" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LogNumberOption" type="OptionButton" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="LogItemTree" type="Tree" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
@@ -26,4 +41,5 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Update Log"
 
+[connection signal="item_selected" from="HBoxContainer/LogNumberOption" to="." method="_on_log_number_option_item_selected"]
 [connection signal="pressed" from="UpdateLogButton" to="." method="update_log"]

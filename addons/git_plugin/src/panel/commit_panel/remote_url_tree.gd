@@ -47,7 +47,7 @@ func add_item(remote_name: String, url: String):
 
 
 func update():
-	var result = await GitPlugin_Remote.version()
+	var result = await GitPlugin_Remote.verbose()
 	for item: String in result:
 		if item != "":
 			var split = item.split("\t")
