@@ -14,7 +14,16 @@ func print_data(data):
 
 
 func _ready() -> void:
-	print(await GitPlugin_Status.execute())
+	var info = await GitPlugin_Remote.show("origin")
+	print_data(info)
+	
+	
+	return
+	
+	var exists = await GitPlugin_Remote.valid_url("https://github.com/LaoDie1/godot-simple-git-plugin")
+	print(exists)
+	
+	#print(await GitPlugin_Remote.valid_url("http://"))
 	#print_data( await GitPlugin_Status.execute() )
 	
 	

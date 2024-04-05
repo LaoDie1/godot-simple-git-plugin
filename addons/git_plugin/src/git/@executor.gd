@@ -23,7 +23,7 @@ static var instance : GitPlugin_Executor:
 
 static var _incr_id : int = 0
 
-## 使用命令请求后的结果
+# 使用命令请求后的结果
 var _id_to_request_result_cache : Dictionary = {}
 
 var thread: Thread
@@ -46,42 +46,12 @@ func _init() -> void:
 	shell.request_finished.connect(_on_shell_request_finish, Object.CONNECT_DEFERRED)
 
 
+
 #============================================================
 #  自定义
 #============================================================
-## 执行命令
-##[br] - [kbd]enable_handle[/kbd] 允许进行数据处理
-static func execute(command: Array, wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
-	print()
-	print("=".repeat(60))
-	print_debug(" >>> 执行命令: ", " ".join(command) )
-	print()
-	
-	var id = instance._execute(command.duplicate(true))
-	var result = await instance.get_request_result(id, wait_time)
-	
-	# 处理执行结果
-	var data : Dictionary = {}
-	if typeof(result) != TYPE_NIL:
-		data["err"] = OK
-		result = str(result).strip_edges(false, true)
-		if enable_handle and result != "":
-			# FIXME 需要修复中文乱码问题
-			data["output"] = result.split("\n")
-		else:
-			data["output"] = [result] if result else []
-		
-		return data
-		
-	else:
-		data["err"] = FAILED
-		data["output"] = []
-		printerr("id 为 ", id, " 的 ", command, " 命令结果为 ", result)
-		return data
-
-
-# 返回执行时的 id
-func _execute(command: Array) -> int:
+# 执行命令，返回数据结果的 ID。
+func _exec_command(command: Array) -> int:
 	if thread != null:
 		thread.wait_to_finish()
 	thread = Thread.new()
@@ -91,11 +61,44 @@ func _execute(command: Array) -> int:
 	return _incr_id
 
 
+##[kbd]command[/kbd]  执行命令
+##[br][kbd]max_wait_time[/kbd]  最大等待时间，超过这个时间则返回空数据
+##[br][kbd]enable_handle[/kbd]  允许进行数据处理
+static func execute(command: Array, max_wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
+	print()
+	print("=".repeat(60))
+	print_debug(" >>> 执行命令: ", " ".join(command) )
+	print()
+	
+	var id = instance._exec_command(command.duplicate(true))
+	var result = await instance.get_request_result(id, max_wait_time)
+	if result:
+		# 处理执行结果
+		var data : Dictionary = {}
+		data["error"] = result["error"]
+		var output = result["output"][0].strip_edges(false, true)
+		if output == "":
+			data["output"] = []
+		else:
+			if enable_handle:
+				# FIXME 修复中文乱码
+				data["output"] = output.split("\n") # 切分为行
+			else:
+				data["output"] = [output]
+		return data
+		
+	else:
+		return {
+			"error": ERR_INVALID_DATA,
+			"output": []
+		}
+
+
 ## 获取这个ID请求的结果，超时返回 [code]null[/code]
-func get_request_result(id: int, wait_time: float) -> Variant:
-	wait_time = int(max(0.001, wait_time) * 1000)
+func get_request_result(id: int, max_wait_time: float) -> Variant:
+	max_wait_time = int(max(0.001, max_wait_time) * 1000)
 	var start_time = Time.get_ticks_msec()
-	while Time.get_ticks_msec() - start_time < wait_time :
+	while Time.get_ticks_msec() - start_time < max_wait_time:
 		await Engine.get_main_loop().process_frame
 		if _id_to_request_result_cache.has(id):
 			var result = _id_to_request_result_cache[id]
@@ -107,11 +110,13 @@ func get_request_result(id: int, wait_time: float) -> Variant:
 #============================================================
 #  连接信号
 #============================================================
-func _on_shell_request_finish(id, command, output):
-	var result : String = output[0]
+func _on_shell_request_finish(id: int, command: Array, result: Dictionary):
+	print_debug(" <<< 执行结束: ", " ".join(command), "")
 	self._id_to_request_result_cache[id] = result
 	
-	print_debug(" <<< 执行结束: ", " ".join(command), "")
+	var error = result["error"]
+	if error != OK:
+		printerr("执行失败：", error, " ", error_string(error) )
 	
 	if self.thread != null:
 		self.thread.wait_to_finish()

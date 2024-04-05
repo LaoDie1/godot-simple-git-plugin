@@ -9,16 +9,18 @@
 class_name GitPlugin_Shell
 
 
-signal request_finished(id, command, result)
+## 请求执行完成
+signal request_finished(id: int, command: Array, result: Dictionary)
 
 
+## 执行功能
 func execute(id, command: Array):
 	var origin = command.duplicate()
 	var result = _execute(command)
 	request_finished.emit(id, origin, result)
 
 
-func _execute(command: Array) -> Array:
+func _execute(command: Array) -> Dictionary:
 	assert(false, "必须重写")
-	return []
+	return {}
 

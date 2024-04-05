@@ -26,7 +26,8 @@ func _execute(command):
 	
 	# 执行
 	var output = []
-	var err = OS.execute(h, command, output)
-	if err != OK:
-		printerr("执行失败：", err, " ", error_string(err) )
-	return output
+	var error = OS.execute(h, command, output)
+	return {
+		"error": error,
+		"output": output,
+	}

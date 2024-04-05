@@ -45,3 +45,9 @@ static func show(name: String):
 	return result["output"]
 
 
+## 检查是否是有效的 URL
+static func valid_url(url: String) -> bool:
+	var result = await GitPlugin_Executor.execute(["git", "ls-remote", url], 20)
+	return result["error"] == OK
+
+
