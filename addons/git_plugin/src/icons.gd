@@ -22,3 +22,8 @@ static func get_icon(file: String) -> Texture2D:
 			else:
 				return ICON.get_icon("File", "EditorIcons")
 
+
+static func get_icon_by_name(name: String):
+	return ICON.get_icon(name, "EditorIcons")
+
+

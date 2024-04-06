@@ -53,7 +53,7 @@ func _ready() -> void:
 		branch_name_option.set_item_icon(idx, ICON.get_icon("VcsBranches", "EditorIcons"))
 		if item == current_branch:
 			branch_name_option.selected = idx
-	
+	GitPlugin_Icons
 	# call_deferred 用于等待节点显示出来
 	update.call_deferred()
 
@@ -156,7 +156,9 @@ func _on_push_pressed() -> void:
 
 func _on_pull_button_pressed():
 	pull_button.disabled = true
-	await GitPlugin_Pull.execute()
+	var remote_name = remote_name_option.get_item_text(remote_name_option.get_selected_id())
+	var branch_name = branch_name_option.get_item_text(branch_name_option.get_selected_id())
+	await GitPlugin_Pull.execute(remote_name, branch_name)
 	pull_button.disabled = false
 
 
