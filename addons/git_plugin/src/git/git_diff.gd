@@ -38,3 +38,8 @@ static func _handle_result(output: Array):
 	return list
 
 
+
+## 比较文件的差异
+static func diff_file(commit_id: String, file_path: String):
+	var result = await GitPlugin_Executor.execute(["git", "diff", commit_id, file_path])
+	

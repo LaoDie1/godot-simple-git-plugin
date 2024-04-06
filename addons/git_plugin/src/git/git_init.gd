@@ -13,7 +13,8 @@ class_name GitPlugin_Init
 static func execute(branch_name: String):
 	var init_result = await GitPlugin_Executor.execute(["git", "init"])
 	var branch_result = await GitPlugin_Executor.execute(["git", "branch", "-M", branch_name])
-	
-
-
+	print_debug(
+		"init: ", init_result, "\n\n",
+		"branch: ", branch_result,
+	)
 

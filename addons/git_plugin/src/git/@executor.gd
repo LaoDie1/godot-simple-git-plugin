@@ -65,7 +65,6 @@ func _exec_command(command: Array) -> int:
 ##[br][kbd]max_wait_time[/kbd]  最大等待时间，超过这个时间则返回空数据
 ##[br][kbd]enable_handle[/kbd]  允许进行数据处理
 static func execute(command: Array, max_wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
-	print()
 	print("=".repeat(60))
 	print_debug(" >>> 执行命令: ", " ".join(command) )
 	print()
@@ -112,6 +111,8 @@ func get_request_result(id: int, max_wait_time: float) -> Variant:
 #============================================================
 func _on_shell_request_finish(id: int, command: Array, result: Dictionary):
 	print_debug(" <<< 执行结束: ", " ".join(command), "")
+	print()
+	
 	self._id_to_request_result_cache[id] = result
 	
 	var error = result["error"]

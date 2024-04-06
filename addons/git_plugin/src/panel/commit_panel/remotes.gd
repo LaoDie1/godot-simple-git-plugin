@@ -14,6 +14,7 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 
 @onready var add_remote_window: ConfirmationDialog = %AddRemoteWindow
 @onready var remote_url_tree : Tree = %RemoteUrlTree
+@onready var delete_confirmation_dialog = %DeleteConfirmationDialog
 
 @onready var _root : TreeItem = remote_url_tree.create_item()
 
@@ -83,7 +84,15 @@ func _on_add_remote_url_button_pressed() -> void:
 func _on_remote_url_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	if mouse_button_index == MOUSE_BUTTON_LEFT:
 		if id == 0: # 删除
-			var remote_name = item.get_text(0)
-			await GitPlugin_Remote.remove(remote_name)
-			update()
+			delete_confirmation_dialog.set_meta("item", item)
+			var url = item.get_text(1)
+			delete_confirmation_dialog.dialog_text = "确认要删除这个仓库链接？\n\n  %s  \n  " % url
+			delete_confirmation_dialog.popup_centered()
+
+
+func _on_delete_confirmation_dialog_confirmed():
+	var item : TreeItem = delete_confirmation_dialog.get_meta("item")
+	var remote_name = item.get_text(0)
+	await GitPlugin_Remote.remove(remote_name)
+	update()
 

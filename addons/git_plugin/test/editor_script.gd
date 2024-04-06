@@ -10,9 +10,11 @@ extends EditorScript
 
 
 func _run() -> void:
-	pass
-	
-	
+	print( is_valid_file_path("addons/git_plugin/src/icon.tres") )
+
+
+static func is_valid_file_path(path: String):
+	return (not path.begins_with(" ") and FileAccess.file_exists(path))
 
 
 func test02():

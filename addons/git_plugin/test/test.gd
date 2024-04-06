@@ -10,20 +10,9 @@ extends Node2D
 
 func print_data(data):
 	print( JSON.stringify(data, "\t") )
-	
 
 
 func _ready() -> void:
-	var info = await GitPlugin_Remote.show("origin")
-	print_data(info)
-	
-	
-	return
-	
-	var exists = await GitPlugin_Remote.valid_url("https://github.com/LaoDie1/godot-simple-git-plugin")
-	print(exists)
-	
-	#print(await GitPlugin_Remote.valid_url("http://"))
-	#print_data( await GitPlugin_Status.execute() )
-	
-	
+	var files = await GitPlugin_Show.files("e1e9b2e64615505277655531905e782e7be9b3f9")
+	print(files)
+

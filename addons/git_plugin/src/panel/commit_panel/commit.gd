@@ -67,31 +67,21 @@ func update():
 		return
 	
 	var data = await GitPlugin_Status.execute()
-	# 暂存
-	var untracked_files : Array = data.get("Untracked files:", [])
-	var changes_not_staged_for_commit : Array = data.get("Changes not staged for commit:", [])
+	
+	# 未跟踪
+	var untracked_files = data["untracked"]
+	unstaged_changes_file_tree.init_items(untracked_files)
+	unstaged_changes_file_count_label.text = "(%d)" % untracked_files.size()
+	
+	# 已修改
+	var changes_not_staged_for_commit : Array = data["changed"]
 	staged_changes_file_tree.init_items(changes_not_staged_for_commit)
 	staged_files_count_label.text = "(%d)" % changes_not_staged_for_commit.size()
 	
-	# 过滤重复的文件
-	var filter_method = func(item_file):
-		return not staged_changes_file_tree._file_to_item_dict.has(item_file)
-	var unstaged_changes_files = untracked_files.filter(filter_method)
-	unstaged_changes_files.append_array(changes_not_staged_for_commit.filter(filter_method))
-	
-	# 未提交
-	unstaged_changes_file_tree.init_items(unstaged_changes_files)
-	unstaged_changes_file_count_label.text = "(%d)" % unstaged_changes_files.size()
-	
 	# 已提交
-	var committed_files : Array = data.get("Changes to be committed:", [])
+	var committed_files : Array = data.get("committed", [])
 	committed_file_tree.init_items(committed_files)
 	committed_file_count_label.text = "(%d)" % committed_files.size()
-
-
-func print_data(result, desc):
-	print( "\n".join(result) )
-	print_debug("   ", desc)
 
 
 ## 点击文件
@@ -169,19 +159,22 @@ func _on_pull_button_pressed():
 
 
 func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
-	staged_changes_file_tree.remove_item(item_file)
-	committed_file_tree.add_item(item_file)
-	GitPlugin_Add.execute([ file ])
+	var results = await GitPlugin_Add.execute([ file ])
+	if results[0]["error"] == OK:
+		staged_changes_file_tree.remove_item(item_file)
+		committed_file_tree.add_item(item_file)
 
 
 func _on_unstaged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
-	unstaged_changes_file_tree.remove_item(item_file)
-	committed_file_tree.add_item(item_file)
-	GitPlugin_Add.execute([file])
+	var results = await GitPlugin_Add.execute([ file ])
+	if results[0]["error"] == OK:
+		unstaged_changes_file_tree.remove_item(item_file)
+		committed_file_tree.add_item(item_file)
 
 
 func _on_committed_file_tree_actived_file(item_file, file):
-	staged_changes_file_tree.add_item(item_file)
-	committed_file_tree.remove_item(item_file)
-	GitPlugin_Restore.execute([ file ])
+	var results = await GitPlugin_Add.execute([ file ])
+	if results[0]["error"] == OK:
+		staged_changes_file_tree.add_item(item_file)
+		committed_file_tree.remove_item(item_file)
 

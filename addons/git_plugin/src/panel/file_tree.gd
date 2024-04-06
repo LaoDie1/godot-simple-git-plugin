@@ -32,19 +32,6 @@ var _last_select_item : TreeItem
 var _root : TreeItem
 var _file_to_item_dict : Dictionary = {}
 var _file_to_checked_dict : Dictionary = {}
-var _file_name_regex : RegEx:
-	get:
-		if _file_name_regex == null:
-			_file_name_regex = RegEx.new()
-			_file_name_regex.compile(
-				"(^(?<type>[^:]+):\\s+)?" # 改动类型
-				+ "("
-				+ "(?<origin>.*?)\\s->\\s(?<current>.*)"  # 文件重命名或发生了移动
-				+ "|(?<path>.*)" # 文件内容发生改动
-				+ ")"
-			)
-		return _file_name_regex
-
 
 var enum_edit: int = 1:
 	get: return 1 if enabled_edit else 0
@@ -121,64 +108,49 @@ func add_item(item_file: String):
 	if _file_to_item_dict.has(item_file):
 		return
 	
+	var tag : String = item_file[1] if item_file[1] != " " else item_file[0]
+	var type_desc : String = GitPlugin_Status.get_type_description(item_file)
+	
+	var file : String = item_file.substr(3)
+	if tag == GitPlugin_Status.Type.renamed:
+		file = file.split("->")[1].strip_edges(true, false)
+	
 	# 创建
 	var item : TreeItem = _root.create_child()
 	item.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
 	set_checked(item, _file_to_checked_dict.get(item_file, true), item_file)
 	
 	# 颜色
-	var file : String
-	var type : String
-	var result : RegExMatch = _file_name_regex.search(item_file)
-	if result != null:
-		type = result.get_string("type")
-		if result.get_string("origin") != "":
-			var old_path = result.get_string("origin")
-			var new_path = result.get_string("current")
-			file = new_path
-		
-		elif result.get_string("path") != "":
-			file = result.get_string("path")
-	
-	if file == "":
-		file = item_file
-	if type == "":
-		type = "new file"
-	
-	match type.to_lower():
-		"modified", "renamed":
+	match tag:
+		GitPlugin_Status.Type.modified:
 			if modified_file_color != Color.WHITE:
 				item.set_custom_color(0, modified_file_color)
-		"deleted": 
+			
+		GitPlugin_Status.Type.deleted: 
 			if deleted_file_color != Color.WHITE:
 				item.set_custom_color(0, deleted_file_color)
-		"new file":
+			
+		GitPlugin_Status.Type.new_file, \
+		GitPlugin_Status.Type.untracked, \
+		GitPlugin_Status.Type.renamed:
 			if new_file_color != Color.WHITE:
 				item.set_custom_color(0, new_file_color)
+			
 		_:
-			print(" >>> FileTree: item type = ", type)
+			print(" >>> FileTree: item type = ", type_desc)
 	
 	# 文件名
-	file = file.trim_prefix("\t")
-	item.set_text(0, file + " (%s)" % type)
-	item.set_tooltip_text(0, file)
+	item.set_text(0, file + " (%s)" % type_desc.capitalize())
+	item.set_tooltip_text(0, item_file)
 	item.set_meta("file", file)
 	item.set_meta("item_file", item_file)
 	
 	# 图标
 	item.set_icon_max_width(0, 16)
-	match file.get_extension():
-		"gd":
-			item.set_icon(0, ICON.get_icon("Script", "EditorIcons"))
-		"tscn":
-			item.set_icon(0, ICON.get_icon("PackedScene", "EditorIcons"))
-		"":
-			item.set_icon(0, ICON.get_icon("Folder", "EditorIcons"))
-		_:
-			item.set_icon(0, ICON.get_icon("ResourcePreloader", "EditorIcons"))
+	item.set_icon(0, GitPlugin_Icons.get_icon(file))
 	
 	# 按钮
-	if enabled_edit:
+	if enabled_edit and Engine.is_editor_hint():
 		item.add_button(0, ICON.get_icon("File", "EditorIcons")) # 编辑
 	if enabled_delete:
 		item.add_button(0, ICON.get_icon("Close", "EditorIcons")) # 删除
@@ -216,7 +188,7 @@ func set_checked(item: TreeItem, checked: bool, item_file: String = ""):
 	_file_to_checked_dict[item_file] = checked
 
 
-## 获取选中的文件
+## 获取选中的文件原始名
 func get_selected_item_file() -> PackedStringArray:
 	var list = PackedStringArray()
 	for item in _root.get_children():
@@ -224,6 +196,8 @@ func get_selected_item_file() -> PackedStringArray:
 			list.append(item.get_meta("item_file"))
 	return list
 
+
+## 获取选中的文件路径
 func get_selected_files() -> PackedStringArray:
 	var list = PackedStringArray()
 	for item in _root.get_children():
