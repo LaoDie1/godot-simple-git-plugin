@@ -18,7 +18,7 @@ static func set_upstream(remote_name: String, branch_name: String):
 
 ## 执行推送
 static func execute(remote_name: String, branch_name: String):
-	var command = ["git", "push", " -u ", remote_name, branch_name ]
+	var command = ["git", "push", "-u", remote_name, branch_name ]
 	var result = await GitPlugin_Executor.execute(command)
 	return result["output"]
 
