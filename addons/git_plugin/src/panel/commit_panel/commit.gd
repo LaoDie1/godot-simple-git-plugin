@@ -148,7 +148,9 @@ func _on_commit_changes_pressed() -> void:
 
 func _on_push_pressed() -> void:
 	push_button.disabled = true
-	await GitPlugin_Push.execute()
+	var remote_name = remote_name_option.get_item_text(remote_name_option.get_selected_id())
+	var branch_name = branch_name_option.get_item_text(branch_name_option.get_selected_id())
+	await GitPlugin_Push.execute(remote_name, branch_name)
 	push_button.disabled = false
 
 
