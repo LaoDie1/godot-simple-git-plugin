@@ -13,7 +13,7 @@ func _execute(command: Array):
 	var c = ["/C"]
 	c.append_array(command)
 	var output = []
-	var error = OS.execute("CMD.exe", c, output)
+	var error = OS.execute("CMD.exe", c, output, true)
 	return {
 		"error": error,
 		"output": output,

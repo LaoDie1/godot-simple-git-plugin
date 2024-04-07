@@ -10,7 +10,7 @@ class_name GitPlugin_Remote
 
 ## 冗长信息显示
 static func verbose():
-	var result = await GitPlugin_Executor.execute(["git remote -v"])
+	var result = await GitPlugin_Executor.execute(["git remote --verbose"])
 	return result["output"]
 
 ## 仓库名列表

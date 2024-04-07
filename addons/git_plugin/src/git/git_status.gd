@@ -58,7 +58,7 @@ static func is_committed_file(item: String):
 
 ## 获取文件列表
 static func execute():
-	var command = ["git status --short" ]
+	var command = ["git status -su" ]
 	var result = await GitPlugin_Executor.execute(command)
 	var untracked = []
 	var changed = []

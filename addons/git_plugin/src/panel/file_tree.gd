@@ -110,6 +110,8 @@ func add_item(item_file: String):
 	
 	var tag : String = item_file[1] if item_file[1] != " " else item_file[0]
 	var type_desc : String = GitPlugin_Status.get_type_description(item_file)
+	if tag == GitPlugin_Status.Type.untracked:
+		type_desc = "New File"
 	
 	var file : String = item_file.substr(3)
 	if tag == GitPlugin_Status.Type.renamed:

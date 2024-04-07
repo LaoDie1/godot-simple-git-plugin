@@ -32,6 +32,9 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 func _ready() -> void:
 	# TODO 对两个 OptionButton 添加切换远程名称和分支的功能
 	
+	if not FileAccess.file_exists(".git"):
+		return
+	
 	# 远程仓库名
 	var remote_name_list = await GitPlugin_Remote.list()
 	if not remote_name_list.is_empty():
@@ -53,7 +56,7 @@ func _ready() -> void:
 		branch_name_option.set_item_icon(idx, ICON.get_icon("VcsBranches", "EditorIcons"))
 		if item == current_branch:
 			branch_name_option.selected = idx
-	GitPlugin_Icons
+	
 	# call_deferred 用于等待节点显示出来
 	update.call_deferred()
 

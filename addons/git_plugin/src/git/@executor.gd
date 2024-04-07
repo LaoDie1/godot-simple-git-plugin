@@ -64,7 +64,7 @@ func _exec_command(command: Array) -> int:
 ##[kbd]command[/kbd]  执行命令
 ##[br][kbd]max_wait_time[/kbd]  最大等待时间，超过这个时间则返回空数据
 ##[br][kbd]enable_handle[/kbd]  允许进行数据处理
-static func execute(command: Array, max_wait_time: float = 10.0, enable_handle: bool = true) -> Dictionary:
+static func execute(command: Array, max_wait_time: float = 30.0, enable_handle: bool = true) -> Dictionary:
 	print("=".repeat(60))
 	print_debug(" >>> 执行命令: ", " ".join(command) )
 	print()
@@ -117,7 +117,10 @@ func _on_shell_request_finish(id: int, command: Array, result: Dictionary):
 	
 	var error = result["error"]
 	if error != OK:
-		printerr("执行失败：", error, " ", error_string(error) )
+		printerr("执行失败：", 
+			error, " ", error_string(error), " ", 
+			str(result["output"][0]).strip_edges() 
+		)
 	
 	if self.thread != null:
 		self.thread.wait_to_finish()

@@ -26,7 +26,7 @@ func _execute(command):
 	
 	# 执行
 	var output = []
-	var error = OS.execute(h, command, output)
+	var error = OS.execute(h, command, output, true)
 	return {
 		"error": error,
 		"output": output,
