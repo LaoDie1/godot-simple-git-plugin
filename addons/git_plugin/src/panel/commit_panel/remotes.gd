@@ -54,7 +54,7 @@ func add_item(remote_name: String, url: String):
 	if not _urls.has(url):
 		_urls[url] = null
 		
-		var item = remote_url_tree.create_item(_root)
+		var item : TreeItem = remote_url_tree.create_item(_root)
 		item.set_text(0, remote_name)
 		item.set_text(1, url)
 		item.add_button(1, ICON.get_icon("Remove", "EditorIcons"))
