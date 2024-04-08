@@ -16,9 +16,6 @@ signal edited_file(item_file: String, file: String)
 signal actived_file(item_file: String, file: String)
 
 
-const ICON = preload("res://addons/git_plugin/src/icon.tres")
-
-
 @export var action_texture : Texture2D
 @export var new_file_color : Color = Color8(143, 171, 130)
 @export var modified_file_color : Color = Color8(250, 227, 69)
@@ -153,9 +150,9 @@ func add_item(item_file: String):
 	
 	# 按钮
 	if enabled_edit and Engine.is_editor_hint():
-		item.add_button(0, ICON.get_icon("File", "EditorIcons")) # 编辑
+		item.add_button(0, GitPlugin_Icons.get_icon_by_name("File")) # 编辑
 	if enabled_delete:
-		item.add_button(0, ICON.get_icon("Close", "EditorIcons")) # 删除
+		item.add_button(0, GitPlugin_Icons.get_icon_by_name("Close")) # 删除
 	if enabled_action:
 		if action_texture:
 			item.add_button(0, action_texture)

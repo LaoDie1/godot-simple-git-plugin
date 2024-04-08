@@ -9,9 +9,6 @@
 extends Tree
 
 
-const ICON = preload("res://addons/git_plugin/src/icon.tres")
-
-
 var _root : TreeItem = create_item()
 
 
@@ -43,7 +40,8 @@ func add_item(remote_name: String, url: String):
 	var item = create_item(_root)
 	item.set_text(0, remote_name)
 	item.set_text(1, url)
-	item.add_button(1, ICON.get_icon("Remove", "EditorIcons"))
+	
+	item.add_button(1, GitPlugin_Icons.get_icon_by_name("Remove"))
 
 
 func update():

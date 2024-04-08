@@ -8,8 +8,6 @@
 @tool
 extends VBoxContainer
 
-const ICON = preload("res://addons/git_plugin/src/icon.tres")
-
 @onready var branch_name_option = %BranchNameOption
 @onready var remote_name_option = %RemoteNameOption
 @onready var unstaged_changes_file_tree: GitPlugin_FileTree = %UnstagedChangesFileTree
@@ -32,7 +30,7 @@ const ICON = preload("res://addons/git_plugin/src/icon.tres")
 func _ready() -> void:
 	# TODO 对两个 OptionButton 添加切换远程名称和分支的功能
 	
-	if not FileAccess.file_exists(".git"):
+	if not DirAccess.dir_exists_absolute(".git"):
 		return
 	
 	# 远程仓库名
@@ -53,7 +51,7 @@ func _ready() -> void:
 		idx += 1
 		branch_name_option.add_item(item)
 		branch_name_option.set_item_metadata(idx, item)
-		branch_name_option.set_item_icon(idx, ICON.get_icon("VcsBranches", "EditorIcons"))
+		branch_name_option.set_item_icon(idx, GitPlugin_Icons.get_icon_by_name("VcsBranches"))
 		if item == current_branch:
 			branch_name_option.selected = idx
 	

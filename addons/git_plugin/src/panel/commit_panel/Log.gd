@@ -9,9 +9,6 @@
 extends VBoxContainer
 
 
-const ICON = preload("res://addons/git_plugin/src/icon.tres")
-
-
 @onready var log_item_tree: Tree = %LogItemTree
 @onready var log_number_option = %LogNumberOption
 @onready var commit_id_line_edit = %CommitIDLineEdit
@@ -105,7 +102,7 @@ func _on_log_item_tree_item_selected():
 			file_item.set_metadata(0, file)
 			
 			if file.get_file() != "":
-				file_item.add_button(0, ICON.get_icon("ActionCopy", "EditorIcons"))
+				file_item.add_button(0, GitPlugin_Icons.get_icon_by_name("ActionCopy"))
 
 
 func _on_copy_button_pressed():
