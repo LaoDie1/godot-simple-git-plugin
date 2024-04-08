@@ -8,6 +8,10 @@
 @tool
 extends VBoxContainer
 
+
+signal pushed
+
+
 @onready var branch_name_option = %BranchNameOption
 @onready var remote_name_option = %RemoteNameOption
 @onready var unstaged_changes_file_tree: GitPlugin_FileTree = %UnstagedChangesFileTree
@@ -144,7 +148,10 @@ func _on_commit_changes_pressed() -> void:
 		commit_message_text_edit.text.strip_edges()
 	)
 	commit_message_text_edit.text = ""
+	
 	update()
+	
+	pushed.emit()
 
 
 func _on_push_pressed() -> void:

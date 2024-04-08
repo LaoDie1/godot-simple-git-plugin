@@ -52,3 +52,5 @@ visible = false
 modulate = Color(1, 1, 1, 0.498039)
 layout_mode = 2
 text = "  Message..."
+
+[connection signal="pushed" from="MarginContainer/VBoxContainer/TabContainer/Commit" to="MarginContainer/VBoxContainer/TabContainer/Log" method="update_log"]
