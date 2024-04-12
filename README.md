@@ -12,8 +12,9 @@
 
 ## Interface
 
-![](addons/git_plugin/assets/2024-04-06_190834.png)
-![](addons/git_plugin/assets/2024-04-06_190850.png)
+<img src='addons/git_plugin/assets/2024-04-06_190834.png' width="45%"/><img src='addons/git_plugin/assets/2024-04-06_190850.png' width="45%"/>
+
+
 
 
 ## Contribute
