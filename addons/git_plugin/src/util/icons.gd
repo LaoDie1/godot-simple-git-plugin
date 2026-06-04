@@ -7,7 +7,7 @@
 #============================================================
 class_name GitPlugin_Icons
 
-const ICON = preload("res://addons/git_plugin/src/icon.tres")
+const ICON = preload("uid://dmomu7e45rfed")
 
 static func get_icon_by_path(file: String) -> Texture2D:
 	match file.get_extension():
