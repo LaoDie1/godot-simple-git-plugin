@@ -67,6 +67,7 @@ func update_log():
 	var idx = 0
 	for data in result:
 		var tree_item = log_item_tree.create_item(log_tree_root)
+		tree_item.set_icon(0, GitPlugin_Icons.get_icon("History"))
 		tree_item.set_text(0, data["id"].substr(0, 11))
 		tree_item.set_text(1, data["date"])
 		tree_item.set_text(2, data["desc"])

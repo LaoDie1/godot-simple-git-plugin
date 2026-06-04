@@ -14,7 +14,7 @@ static func execute(item_number: int = 0):
 	# CAUTION: 下面命令中的 %s 后面的空格不能去掉，否则一些中文乱码会导致换行符丢失，需要加个字符分隔一下
 	var result
 	if item_number > 0:
-		result = await GitPlugin_Executor.execute('git log --pretty="%H;;;%cd;;;%s " --date=iso ', "-%d" % item_number)
+		result = await GitPlugin_Executor.execute('git log --pretty="%H;;;%cd;;;%s " --date=iso ', -item_number)
 	else:
 		result = await GitPlugin_Executor.execute('git log --pretty="%H;;;%cd;;;%s " --date=iso')
 	return _handle_result(result["output"])
@@ -22,6 +22,7 @@ static func execute(item_number: int = 0):
 
 # 处理结果
 static func _handle_result(output):
+	print(output)
 	# 对每次提交进行分组
 	var list = []
 	for line:String in output:
