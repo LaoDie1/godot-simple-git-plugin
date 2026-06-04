@@ -31,7 +31,3 @@ static func all():
 static func remotes():
 	var result = await GitPlugin_Executor.execute(["git branch --remotes"])
 	return result["output"]
-
-
-
-

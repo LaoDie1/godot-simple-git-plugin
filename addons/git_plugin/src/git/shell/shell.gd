@@ -23,4 +23,3 @@ func execute(id, command: Array):
 func _execute(command: Array) -> Dictionary:
 	assert(false, "必须重写")
 	return {}
-

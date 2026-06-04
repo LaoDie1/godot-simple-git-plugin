@@ -17,4 +17,3 @@ static func execute(branch_name: String):
 		"init: ", init_result, "\n\n",
 		"branch: ", branch_result,
 	)
-

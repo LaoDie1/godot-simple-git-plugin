@@ -9,12 +9,21 @@
 extends GitPlugin_Shell
 
 
-func _execute(command: Array):
-	var c = ["/C"]
-	c.append_array(command)
-	var output = []
-	var error = OS.execute("CMD.exe", c, output, true)
-	return {
-		"error": error,
-		"output": output,
-	}
+func _execute(command: Array) -> Dictionary:
+	var args = PackedStringArray(["/C", " ".join(command)])
+	var proc = OS.execute_with_pipe("CMD.exe", args, true)
+	var stdio : FileAccess = proc["stdio"]
+	var stderr : FileAccess = proc["stderr"] #读取会卡死，别读
+	var pid : int = proc["pid"]
+	
+	# 循环读取直到没有数据
+	var output_bytes := PackedByteArray()
+	while not stdio.eof_reached():
+		# 每次读 4096 字节，直到读完
+		var chunk = stdio.get_buffer(4096)
+		if chunk.size() == 0:
+			break
+		output_bytes.append_array(chunk)
+	var output_string : String = output_bytes.get_string_from_utf8()
+	
+	return {"output": [output_string], "error": OK}

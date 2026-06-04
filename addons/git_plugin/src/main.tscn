@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://b84ncy7wplrnp"]
+[gd_scene format=3 uid="uid://b84ncy7wplrnp"]
 
-[ext_resource type="Script" path="res://addons/git_plugin/src/main.gd" id="1_g7vdx"]
-[ext_resource type="PackedScene" uid="uid://b6m25ar08vbba" path="res://addons/git_plugin/src/panel/commit_panel/commit_panel.tscn" id="2_hklok"]
-[ext_resource type="PackedScene" uid="uid://b0mo6ij8gieuf" path="res://addons/git_plugin/src/panel/init_panel/init_panel.tscn" id="3_tn6tc"]
+[ext_resource type="Script" uid="uid://40m2cq4wi0xi" path="res://addons/git_plugin/src/main.gd" id="1_g7vdx"]
+[ext_resource type="PackedScene" uid="uid://b6m25ar08vbba" path="res://addons/git_plugin/src/scene/commit_panel/commit_panel.tscn" id="2_hklok"]
+[ext_resource type="PackedScene" uid="uid://b0mo6ij8gieuf" path="res://addons/git_plugin/src/scene/init_panel/init_panel.tscn" id="3_tn6tc"]
 
-[node name="Git" type="Control"]
+[node name="Git" type="Control" unique_id=393640044]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 15
@@ -16,7 +16,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_g7vdx")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=46553609]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,11 +24,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CommitPanel" parent="." instance=ExtResource("2_hklok")]
+[node name="CommitPanel" parent="." unique_id=1495279324 instance=ExtResource("2_hklok")]
 unique_name_in_owner = true
 layout_mode = 1
 
-[node name="InitPanel" parent="." instance=ExtResource("3_tn6tc")]
+[node name="InitPanel" parent="." unique_id=2103387198 instance=ExtResource("3_tn6tc")]
 unique_name_in_owner = true
 layout_mode = 1
 

@@ -26,7 +26,3 @@ static func files(commit_id: String) -> Array[String]:
 		files.append(output[i])
 	
 	return files
-
-
-
-

@@ -75,4 +75,3 @@ static func execute():
 		"changed":   changed,   # 修改未提交
 		"committed": committed, # 确定提交
 	}
-

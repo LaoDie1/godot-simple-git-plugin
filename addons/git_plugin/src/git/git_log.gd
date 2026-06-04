@@ -36,4 +36,3 @@ static func _handle_result(output):
 				"desc": items[2].strip_edges(),
 			})
 	return list
-
