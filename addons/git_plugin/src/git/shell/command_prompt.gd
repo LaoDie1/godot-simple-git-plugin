@@ -16,9 +16,6 @@ func _execute(command: Array) -> Dictionary:
 	var stderr : FileAccess = proc["stderr"] #读取会卡死，别读
 	var pid : int = proc["pid"]
 	
-	if not Engine.is_editor_hint():
-		print("已执行命令", "CMD.exe ", " ".join(args))
-	
 	# 循环读取直到没有数据
 	var idx : int = 0
 	var output_bytes := PackedByteArray()
@@ -31,8 +28,6 @@ func _execute(command: Array) -> Dictionary:
 		await (Engine.get_main_loop() as SceneTree).process_frame
 		idx += 1
 	var output_string : String = output_bytes.get_string_from_utf8()
-	if not Engine.is_editor_hint():
-		print(output_string)
 	
 	OS.kill(pid)
 	return {"output": [output_string], "error": OK}

@@ -49,5 +49,3 @@ func _confirmed():
 		method_list[method_name] = null
 		item.selected = false
 	selected_method.emit(method_list.keys())
-
-
