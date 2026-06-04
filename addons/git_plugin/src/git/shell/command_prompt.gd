@@ -17,13 +17,16 @@ func _execute(command: Array) -> Dictionary:
 	var pid : int = proc["pid"]
 	
 	# 循环读取直到没有数据
+	var idx : int = 0
 	var output_bytes := PackedByteArray()
-	while not stdio.eof_reached():
+	while not stdio.eof_reached() or idx < 1024:
 		# 每次读 4096 字节，直到读完
 		var chunk = stdio.get_buffer(4096)
 		if chunk.size() == 0:
 			break
 		output_bytes.append_array(chunk)
+		await (Engine.get_main_loop() as SceneTree).process_frame
+		idx += 1
 	var output_string : String = output_bytes.get_string_from_utf8()
 	
 	return {"output": [output_string], "error": OK}

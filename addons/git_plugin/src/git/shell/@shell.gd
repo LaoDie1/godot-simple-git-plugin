@@ -17,7 +17,7 @@ signal request_finished(id: int, command: Array, result: Dictionary)
 ## 执行功能
 func execute(id, command: Array):
 	var origin = command.duplicate()
-	var result = _execute(command)
+	var result = await _execute(command)
 	request_finished.emit(id, origin, result)
 
 
