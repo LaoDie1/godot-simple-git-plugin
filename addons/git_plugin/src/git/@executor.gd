@@ -55,6 +55,8 @@ func _exec_command(command: Array) -> int:
 	if thread != null:
 		thread.wait_to_finish()
 	thread = Thread.new()
+	if not Engine.is_editor_hint():
+		print("开始执行线程")
 	# 执行 shell 命令
 	_incr_id += 1
 	thread.start(shell.execute.bind(_incr_id, command))
