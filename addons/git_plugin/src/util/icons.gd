@@ -24,4 +24,6 @@ static func get_icon(name: String) -> Texture2D:
 	if DisplayServer.is_dark_mode_supported():
 		if not DisplayServer.is_dark_mode():
 			return ICON.get_icon(name, "EditorIcons")
-	return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
+	if Engine.is_editor_hint():
+		return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
+	return ICON.get_icon(name, "EditorIcons")

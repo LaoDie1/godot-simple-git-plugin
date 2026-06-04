@@ -52,8 +52,8 @@ func _init() -> void:
 #============================================================
 # 执行命令，返回数据结果的 ID。
 func _exec_command(command: Array) -> int:
-	if thread != null:
-		thread.wait_to_finish()
+	#if thread != null:
+		#thread.wait_to_finish() #防止卡死
 	thread = Thread.new()
 	# 执行 shell 命令
 	_incr_id += 1
