@@ -10,7 +10,7 @@ class_name GitPlugin_Show
 
 ## 此次提交的文件列表
 static func files(commit_id: String) -> Array[String]:
-	var result = await GitPlugin_Executor.execute(["git show --name-only ", commit_id])
+	var result = await GitPlugin_Executor.execute("git show --name-only ", commit_id)
 	var output = result["output"]
 	
 	# 找到文件所在行

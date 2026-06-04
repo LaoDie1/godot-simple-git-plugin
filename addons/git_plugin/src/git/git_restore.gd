@@ -29,9 +29,6 @@ static func execute(file_or_files):
 	var output = []
 	for i in batch_total:
 		var items = Array(files.slice(i * batch_count, (i+1) * batch_count))
-		var command = ["git restore --staged "]
-		command.append_array(items)
-		var result = await GitPlugin_Executor.execute(command)
+		var result = await GitPlugin_Executor.execute("git restore --staged ", " ".join(items))
 		output.append(result)
-	
 	return output

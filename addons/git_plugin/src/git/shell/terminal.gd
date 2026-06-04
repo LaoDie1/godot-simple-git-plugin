@@ -8,13 +8,13 @@
 # Linux / MacOS 平台
 extends GitPlugin_Shell
 
-var _regex = RegEx.new()
+var _regex := RegEx.new()
 
 func _init():
 	_regex.compile("^\\s*git(?<else>\\s\\S+)")
 
 
-func _execute(command):
+func _execute(command) -> Dictionary:
 	# 获取 git 
 	var h = command[0]
 	var re = _regex.search(h)

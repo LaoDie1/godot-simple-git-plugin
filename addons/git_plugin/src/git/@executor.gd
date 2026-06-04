@@ -62,14 +62,13 @@ func _exec_command(command: Array) -> int:
 
 
 ##[kbd]command[/kbd]  执行命令
-##[br][kbd]max_wait_time[/kbd]  最大等待时间，超过这个时间则返回空数据
-##[br][kbd]enable_handle[/kbd]  允许进行数据处理
-static func execute(command: Array, max_wait_time: float = 30.0, enable_handle: bool = true) -> Dictionary:
+static func execute(...command: Array) -> Dictionary:
 	#print("=".repeat(60))
 	#print_debug(" >>> 执行命令: ", " ".join(command) )
 	#print()
 	
 	var id = instance._exec_command(command.duplicate(true))
+	var max_wait_time = 30 #最大等待时间，超过这个时间则返回空数据
 	var result = await instance.get_request_result(id, max_wait_time)
 	if result:
 		# 处理执行结果
@@ -79,11 +78,7 @@ static func execute(command: Array, max_wait_time: float = 30.0, enable_handle: 
 		if output == "":
 			data["output"] = []
 		else:
-			if enable_handle:
-				# FIXME 修复中文乱码
-				data["output"] = output.split("\n") # 切分为行
-			else:
-				data["output"] = [output]
+			data["output"] = output.split("\n") # 切分为行
 		return data
 		
 	else:

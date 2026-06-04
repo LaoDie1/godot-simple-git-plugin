@@ -27,9 +27,7 @@ static func execute(file_or_files):
 	var results = []
 	for i in batch_total:
 		var items = Array(files.slice(i * batch_count, (i+1) * batch_count))
-		var command = ["git", "add"]
-		command.append_array(items)
-		var result = await GitPlugin_Executor.execute(command)
+		var result = await GitPlugin_Executor.execute("git", "add", " ".join(items))
 		results.append(result)
 	return results
 

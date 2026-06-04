@@ -6,6 +6,7 @@
 # - version: 4.2.1.stable
 #============================================================
 ## 执行命令操作
+@abstract
 class_name GitPlugin_Shell
 
 
@@ -20,6 +21,5 @@ func execute(id, command: Array):
 	request_finished.emit(id, origin, result)
 
 
-func _execute(command: Array) -> Dictionary:
-	assert(false, "必须重写")
-	return {}
+@abstract
+func _execute(command: Array) -> Dictionary

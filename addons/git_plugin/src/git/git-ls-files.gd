@@ -10,4 +10,4 @@ class_name GitPlugin_ls_files
 
 ## 列出所有跟踪的文件
 static func all():
-	return await GitPlugin_Executor.execute(["git ls-files"])
+	return await GitPlugin_Executor.execute("git ls-files")
