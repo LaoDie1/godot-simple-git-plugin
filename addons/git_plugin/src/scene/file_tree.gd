@@ -10,11 +10,16 @@ class_name GitPlugin_FileTree
 extends Tree
 
 
+signal actived_file(item_file: String, file: String)
 ## item_file: 原始的带有其他信息的文件名
 ## file: 纯文件名，没有其他信息
 signal edited_file(item_file: String, file: String)
-signal actived_file(item_file: String, file: String)
 
+enum ButtonID {
+	EDIT,
+	DELETE,
+	ACTIVE,
+}
 
 @export var action_texture : Texture2D
 @export var new_file_color : Color = Color8(143, 171, 130)
@@ -24,23 +29,12 @@ signal actived_file(item_file: String, file: String)
 @export var enabled_delete : bool = true
 @export var enabled_action : bool = true
 
-
 var _last_select_item : TreeItem
 var _root : TreeItem
 var _file_to_item_dict : Dictionary = {}
 var _file_to_checked_dict : Dictionary = {}
 
-var enum_edit: int = 1:
-	get: return 1 if enabled_edit else 0
-var enum_delete : int:
-	get: return (enum_edit + 1) if enabled_delete else 0
-var enum_action : int:
-	get: return (sign(enum_edit) + sign(enum_delete) + 1) if enabled_action else 0
 
-
-#============================================================
-#  内置
-#============================================================
 func _init() -> void:
 	hide_root = true
 	hide_folding = true
@@ -86,9 +80,6 @@ func _init() -> void:
 
 
 
-#============================================================
-#  自定义
-#============================================================
 func init_items(items: Array):
 	_last_select_item = null
 	_file_to_item_dict.clear()
@@ -152,12 +143,12 @@ func add_item(item_file: String):
 	
 	# 按钮
 	if enabled_edit and Engine.is_editor_hint():
-		item.add_button(0, GitPlugin_Icons.get_icon("File")) # 编辑
+		item.add_button(0, GitPlugin_Icons.get_icon("File"), ButtonID.EDIT) # 编辑
 	if enabled_delete:
-		item.add_button(0, GitPlugin_Icons.get_icon("Close")) # 删除
+		item.add_button(0, GitPlugin_Icons.get_icon("Close"), ButtonID.DELETE) # 删除
 	if enabled_action:
 		if action_texture:
-			item.add_button(0, action_texture)
+			item.add_button(0, action_texture, ButtonID.ACTIVE)
 	
 	_file_to_item_dict[item_file] = item
 
@@ -212,20 +203,19 @@ func get_files():
 	return _file_to_item_dict.keys()
 
 
-#============================================================
-#  连接信号
-#============================================================
+
 func button_click(item: TreeItem, column: int, id: int, mouse_button_index: int):
-	id += 1
 	
 	var file : String = item.get_meta("file")
 	var item_file : String = item.get_meta("item_file")
-	if id == enum_edit:
-		edited_file.emit(item_file, file)
-	elif id == enum_delete:
-		print("删除 ", file)
-	elif id == enum_action:
-		actived_file.emit(item_file, file)
-	else:
-		print("点击", id)
+	match id:
+		ButtonID.EDIT:
+			edited_file.emit(item_file, file)
+		ButtonID.DELETE:
+			pass
+			#print("删除 ", file)
+		ButtonID.ACTIVE:
+			actived_file.emit(item_file, file)
+		_:
+			print("点击", id)
 	

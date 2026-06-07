@@ -21,16 +21,6 @@ signal finished
 
 signal respond_error(err: int)
 
-static var instance: GitPlugin_CommandRequest:
-	get:
-		if not is_instance_valid(instance):
-			instance = GitPlugin_CommandRequest.new()
-			var scene_tree = Engine.get_main_loop()
-			if scene_tree is SceneTree:
-				scene_tree.root.add_child.call_deferred(instance)
-		return instance
-
-
 var _stdio: FileAccess
 var _stderr: FileAccess
 var _pid: int = 0

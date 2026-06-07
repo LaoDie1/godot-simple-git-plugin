@@ -8,7 +8,13 @@
 class_name GitPlugin_Restore
 
 
-static func execute(file_or_files):
+static func restore_one(file: String) -> Dictionary:
+	# 使用文件路径的方式添加
+	var result = await GitPlugin_Executor.execute("git restore --staged %s " % file)
+	return result
+
+
+static func execute(file_or_files) -> Dictionary:
 	var files : PackedStringArray
 	if file_or_files is Array or file_or_files is PackedStringArray:
 		files = PackedStringArray(file_or_files)

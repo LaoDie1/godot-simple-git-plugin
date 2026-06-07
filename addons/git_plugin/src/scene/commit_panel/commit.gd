@@ -170,21 +170,21 @@ func _on_pull_button_pressed():
 
 
 func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
-	var result = await GitPlugin_Add.execute([ file ])
+	var result = await GitPlugin_Add.add_one(file)
 	if result["error"] == OK:
 		staged_changes_file_tree.remove_item(item_file)
 		committed_file_tree.add_item(item_file)
 
 
 func _on_unstaged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
-	var result = await GitPlugin_Add.execute([ file ])
+	var result = await GitPlugin_Add.add_one(file)
 	if result["error"] == OK:
 		unstaged_changes_file_tree.remove_item(item_file)
 		committed_file_tree.add_item(item_file)
 
 
 func _on_committed_file_tree_actived_file(item_file, file):
-	var result = await GitPlugin_Add.execute([ file ])
+	var result = await GitPlugin_Restore.restore_one(file)
 	if result["error"] == OK:
 		staged_changes_file_tree.add_item(item_file)
 		committed_file_tree.remove_item(item_file)

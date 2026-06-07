@@ -9,6 +9,12 @@
 class_name GitPlugin_Add
 
 
+static func add_one(file: String) -> Dictionary:
+	# 使用文件路径的方式添加
+	var result = await GitPlugin_Executor.execute("git add %s" % file)
+	return result
+
+
 static func execute(file_or_files) -> Dictionary:
 	var files : PackedStringArray
 	if file_or_files is Array or file_or_files is PackedStringArray:

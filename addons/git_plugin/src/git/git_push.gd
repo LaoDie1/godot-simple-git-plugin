@@ -10,16 +10,16 @@ class_name GitPlugin_Push
 
 
 ## 设置推流
-static func set_upstream(remote_name: String, branch_name: String):
+static func set_upstream(remote_name: String, branch_name: String) -> String:
 	var result = await GitPlugin_Executor.execute("git push --set-upstream %s %s " % [remote_name, branch_name])
 	return result["output"]
 
 
 ## 执行推送
-static func execute(remote_name: String, branch_name: String):
+static func execute(remote_name: String, branch_name: String) -> String:
 	var result = await GitPlugin_Executor.execute("git push -u %s %s" % [remote_name, branch_name] )
 	if result["error"] == OK:
 		print("推送完成")
 	else:
-		printerr("推送失败：", result)
+		printerr(result["output"])
 	return result["output"]

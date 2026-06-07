@@ -13,21 +13,34 @@ extends RefCounted
 static var plugin: EditorPlugin
 
 
+static var _request: GitPlugin_CommandRequest:
+	get:
+		if not is_instance_valid(_request):
+			_request = GitPlugin_CommandRequest.new()
+			var scene_tree = Engine.get_main_loop()
+			if scene_tree is SceneTree:
+				scene_tree.root.add_child.call_deferred(_request)
+		return _request
+
+
 ## 执行 git 命令
-static func execute(command: String) -> Dictionary:
+static func execute(command: String, request: GitPlugin_CommandRequest = null) -> Dictionary:
 	if not Engine.is_editor_hint() or plugin:
+		if request == null:
+			request = _request
+		
 		# 等待上次的执行完成
-		while GitPlugin_CommandRequest.instance.is_running():
-			await GitPlugin_CommandRequest.instance.finished
+		while request.is_running():
+			await request.finished
 		
 		print("[ GitPlugin_Executor ] Execute Command:  %s" % [command])
 		
 		# 正式执行 
-		GitPlugin_CommandRequest.instance.execute(command)
-		if GitPlugin_CommandRequest.instance.is_running():
-			await GitPlugin_CommandRequest.instance.finished
-		var bytes : PackedByteArray = GitPlugin_CommandRequest.instance.get_body_result()
-		var err_bytes : PackedByteArray = GitPlugin_CommandRequest.instance.get_err_result()
+		request.execute(command)
+		if request.is_running():
+			await request.finished
+		var bytes : PackedByteArray = request.get_body_result()
+		var err_bytes : PackedByteArray = request.get_err_result()
 		if err_bytes.is_empty():
 			return {
 				"error": OK,
