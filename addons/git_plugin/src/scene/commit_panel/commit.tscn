@@ -576,11 +576,12 @@ theme_override_constants/separation = 8
 [node name="VSplitContainer" type="VSplitContainer" parent="." unique_id=2098201731]
 layout_mode = 2
 size_flags_vertical = 3
-split_offsets = PackedInt32Array(200)
-split_offset = 200
+split_offsets = PackedInt32Array(0, 0, 0)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer" unique_id=394068368]
 layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer/VBoxContainer" unique_id=351066210]
 layout_mode = 2
@@ -624,38 +625,33 @@ script = ExtResource("2_fmujg")
 action_texture = SubResource("ImageTexture_e0dbv")
 enabled_delete = false
 
-[node name="VSplitContainer2" type="VSplitContainer" parent="VSplitContainer" unique_id=24784983]
+[node name="VBoxContainer2" type="VBoxContainer" parent="VSplitContainer" unique_id=1385256025]
 layout_mode = 2
 size_flags_vertical = 3
-split_offsets = PackedInt32Array(-75)
-split_offset = -75
+size_flags_stretch_ratio = 0.2
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="VSplitContainer/VSplitContainer2" unique_id=1385256025]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="HBoxContainer3" type="HBoxContainer" parent="VSplitContainer/VSplitContainer2/VBoxContainer2" unique_id=1620516189]
+[node name="HBoxContainer3" type="HBoxContainer" parent="VSplitContainer/VBoxContainer2" unique_id=1620516189]
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3" unique_id=443935768]
+[node name="Label2" type="Label" parent="VSplitContainer/VBoxContainer2/HBoxContainer3" unique_id=443935768]
 layout_mode = 2
 text = "Changes not staged for commit"
 
-[node name="StagedFilesCountLabel" type="Label" parent="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3" unique_id=1544748922]
+[node name="StagedFilesCountLabel" type="Label" parent="VSplitContainer/VBoxContainer2/HBoxContainer3" unique_id=1544748922]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(1)"
 
-[node name="Control" type="Control" parent="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3" unique_id=1324280341]
+[node name="Control" type="Control" parent="VSplitContainer/VBoxContainer2/HBoxContainer3" unique_id=1324280341]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AddAllStagedFiles" type="Button" parent="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3" unique_id=2067643041]
+[node name="AddAllStagedFiles" type="Button" parent="VSplitContainer/VBoxContainer2/HBoxContainer3" unique_id=2067643041]
 unique_name_in_owner = true
 layout_mode = 2
 icon = SubResource("DPITexture_pv7c6")
 
-[node name="StagedChangesFileTree" type="Tree" parent="VSplitContainer/VSplitContainer2/VBoxContainer2" unique_id=21092001]
+[node name="StagedChangesFileTree" type="Tree" parent="VSplitContainer/VBoxContainer2" unique_id=21092001]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -665,38 +661,33 @@ script = ExtResource("2_fmujg")
 action_texture = SubResource("ImageTexture_e0dbv")
 enabled_delete = false
 
-[node name="VSplitContainer" type="VSplitContainer" parent="VSplitContainer/VSplitContainer2" unique_id=1113572329]
+[node name="VBoxContainer3" type="VBoxContainer" parent="VSplitContainer" unique_id=596260540]
 layout_mode = 2
 size_flags_vertical = 3
-split_offsets = PackedInt32Array(-115)
-split_offset = -115
+size_flags_stretch_ratio = 0.2
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="VSplitContainer/VSplitContainer2/VSplitContainer" unique_id=596260540]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2" unique_id=5748252]
+[node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer/VBoxContainer3" unique_id=5748252]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/HBoxContainer" unique_id=172470736]
+[node name="Label" type="Label" parent="VSplitContainer/VBoxContainer3/HBoxContainer" unique_id=172470736]
 layout_mode = 2
 text = "Changes to be committed"
 
-[node name="CommittedFileCountLabel" type="Label" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/HBoxContainer" unique_id=1886246601]
+[node name="CommittedFileCountLabel" type="Label" parent="VSplitContainer/VBoxContainer3/HBoxContainer" unique_id=1886246601]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0)"
 
-[node name="Control" type="Control" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/HBoxContainer" unique_id=1153606516]
+[node name="Control" type="Control" parent="VSplitContainer/VBoxContainer3/HBoxContainer" unique_id=1153606516]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RemoveAll" type="Button" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/HBoxContainer" unique_id=1213957230]
+[node name="RemoveAll" type="Button" parent="VSplitContainer/VBoxContainer3/HBoxContainer" unique_id=1213957230]
 unique_name_in_owner = true
 layout_mode = 2
 icon = SubResource("DPITexture_sxfh1")
 
-[node name="CommittedFileTree" type="Tree" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2" unique_id=990297202]
+[node name="CommittedFileTree" type="Tree" parent="VSplitContainer/VBoxContainer3" unique_id=990297202]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -709,7 +700,7 @@ modified_file_color = Color(1, 1, 1, 1)
 deleted_file_color = Color(1, 1, 1, 1)
 enabled_delete = false
 
-[node name="CommittedFileTreePrompt" type="ReferenceRect" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree" unique_id=317051470]
+[node name="CommittedFileTreePrompt" type="ReferenceRect" parent="VSplitContainer/VBoxContainer3/CommittedFileTree" unique_id=317051470]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -724,28 +715,29 @@ grow_vertical = 2
 mouse_filter = 2
 border_width = 2.0
 
-[node name="CommittedFileTreeAnimationPlayer" type="AnimationPlayer" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree/CommittedFileTreePrompt" unique_id=165688117]
+[node name="CommittedFileTreeAnimationPlayer" type="AnimationPlayer" parent="VSplitContainer/VBoxContainer3/CommittedFileTree/CommittedFileTreePrompt" unique_id=165688117]
 unique_name_in_owner = true
 libraries/ = SubResource("AnimationLibrary_c0tl4")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/VSplitContainer2/VSplitContainer" unique_id=1273804396]
+[node name="VBoxContainer4" type="VBoxContainer" parent="VSplitContainer" unique_id=1273804396]
+layout_mode = 2
+size_flags_stretch_ratio = 0.0
+
+[node name="HSeparator2" type="HSeparator" parent="VSplitContainer/VBoxContainer4" unique_id=346596687]
 layout_mode = 2
 
-[node name="HSeparator2" type="HSeparator" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer" unique_id=346596687]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer" unique_id=580563073]
+[node name="Label" type="Label" parent="VSplitContainer/VBoxContainer4" unique_id=580563073]
 layout_mode = 2
 text = "Commit Message"
 
-[node name="CommitMessageTextEdit" type="TextEdit" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer" unique_id=327409744]
+[node name="CommitMessageTextEdit" type="TextEdit" parent="VSplitContainer/VBoxContainer4" unique_id=327409744]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Submission information must be filled out."
 
-[node name="CommitMessagePrompt" type="ReferenceRect" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer/CommitMessageTextEdit" unique_id=1714035568]
+[node name="CommitMessagePrompt" type="ReferenceRect" parent="VSplitContainer/VBoxContainer4/CommitMessageTextEdit" unique_id=1714035568]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -760,7 +752,7 @@ grow_vertical = 2
 mouse_filter = 2
 border_width = 2.0
 
-[node name="CommitMessagePromptAnimationPlayer" type="AnimationPlayer" parent="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer/CommitMessageTextEdit/CommitMessagePrompt" unique_id=1249579387]
+[node name="CommitMessagePromptAnimationPlayer" type="AnimationPlayer" parent="VSplitContainer/VBoxContainer4/CommitMessageTextEdit/CommitMessagePrompt" unique_id=1249579387]
 unique_name_in_owner = true
 libraries/ = SubResource("AnimationLibrary_c0tl4")
 
@@ -806,12 +798,12 @@ text = "Pull"
 [connection signal="pressed" from="VSplitContainer/VBoxContainer/HBoxContainer/AddAllUnstagedFile" to="." method="_on_add_all_unstaged_file_pressed"]
 [connection signal="actived_file" from="VSplitContainer/VBoxContainer/UnstagedChangesFileTree" to="." method="_on_unstaged_changes_file_tree_actived_file"]
 [connection signal="edited_file" from="VSplitContainer/VBoxContainer/UnstagedChangesFileTree" to="." method="edit_file"]
-[connection signal="pressed" from="VSplitContainer/VSplitContainer2/VBoxContainer2/HBoxContainer3/AddAllStagedFiles" to="." method="_on_add_all_staged_files_pressed"]
-[connection signal="actived_file" from="VSplitContainer/VSplitContainer2/VBoxContainer2/StagedChangesFileTree" to="." method="_on_staged_changes_file_tree_actived_file"]
-[connection signal="edited_file" from="VSplitContainer/VSplitContainer2/VBoxContainer2/StagedChangesFileTree" to="." method="edit_file"]
-[connection signal="pressed" from="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/HBoxContainer/RemoveAll" to="." method="_on_remove_all_pressed"]
-[connection signal="actived_file" from="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree" to="." method="_on_committed_file_tree_actived_file"]
-[connection signal="edited_file" from="VSplitContainer/VSplitContainer2/VSplitContainer/VBoxContainer2/CommittedFileTree" to="." method="edit_file"]
+[connection signal="pressed" from="VSplitContainer/VBoxContainer2/HBoxContainer3/AddAllStagedFiles" to="." method="_on_add_all_staged_files_pressed"]
+[connection signal="actived_file" from="VSplitContainer/VBoxContainer2/StagedChangesFileTree" to="." method="_on_staged_changes_file_tree_actived_file"]
+[connection signal="edited_file" from="VSplitContainer/VBoxContainer2/StagedChangesFileTree" to="." method="edit_file"]
+[connection signal="pressed" from="VSplitContainer/VBoxContainer3/HBoxContainer/RemoveAll" to="." method="_on_remove_all_pressed"]
+[connection signal="actived_file" from="VSplitContainer/VBoxContainer3/CommittedFileTree" to="." method="_on_committed_file_tree_actived_file"]
+[connection signal="edited_file" from="VSplitContainer/VBoxContainer3/CommittedFileTree" to="." method="edit_file"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer2/CommitChanges" to="." method="_on_commit_changes_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer2/PushButton" to="." method="_on_push_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer2/PullButton" to="." method="_on_pull_button_pressed"]
