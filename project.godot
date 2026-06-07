@@ -27,3 +27,8 @@ ApprenticeAutoload="*uid://baurs4cfdmqvf"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/apprentice/plugin.cfg", "res://addons/git_plugin/plugin.cfg", "res://addons/script_comment_menu/plugin.cfg")
+
+[log]
+
+display=31
+print_path=10

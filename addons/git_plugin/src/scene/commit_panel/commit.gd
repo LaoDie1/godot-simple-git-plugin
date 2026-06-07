@@ -38,6 +38,9 @@ func _ready() -> void:
 	%AddAllStagedFiles.icon = GitPlugin_Icons.get_icon("MoveDown")
 	%RemoveAll.icon = GitPlugin_Icons.get_icon("MoveUp")
 	%UpdateFiles.icon = GitPlugin_Icons.get_icon("Reload")
+	%UnstagedChangesFileTree.action_texture = GitPlugin_Icons.get_icon("MoveDown")
+	%StagedChangesFileTree.action_texture = GitPlugin_Icons.get_icon("MoveDown")
+	%CommittedFileTree.action_texture = GitPlugin_Icons.get_icon("MoveUp")
 	
 	if not DirAccess.dir_exists_absolute(".git"):
 		return
