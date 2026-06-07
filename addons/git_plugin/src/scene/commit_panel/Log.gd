@@ -18,13 +18,16 @@ extends VBoxContainer
 @onready var file_item_root : TreeItem = file_item_tree.create_item()
 @onready var command_request: GitPlugin_CommandRequest = $CommandRequest
 
+var _last_update_tick: int = -1
 
 
-#============================================================
-#  内置
-#============================================================
 func _ready() -> void:
-	visibility_changed.connect(update_log, Object.CONNECT_ONE_SHOT)
+	visibility_changed.connect(
+		func():
+			if _last_update_tick < 0 or Time.get_ticks_msec() - _last_update_tick > 1000:
+				update_log()
+			_last_update_tick = Time.get_ticks_msec()
+	)
 	
 	log_number_option.clear()
 	for item in ["10", "20", "50", "100", "All"]:
@@ -49,7 +52,7 @@ func _ready() -> void:
 #============================================================
 ## 更新日志列表
 func update_log():
-	if not visible or log_item_tree == null:
+	if not visible:
 		return
 	
 	commit_id_line_edit.text = ""
