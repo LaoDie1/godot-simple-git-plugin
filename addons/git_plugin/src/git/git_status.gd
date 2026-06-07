@@ -57,18 +57,20 @@ static func is_committed_file(item: String):
 	)
 
 ## 获取文件列表
-static func execute():
+static func execute() -> Dictionary:
 	var result = await GitPlugin_Executor.execute("git status -su")
-	var untracked = []
-	var changed = []
-	var committed = []
-	for item in result["output"]:
-		if is_untracked_file(item):
-			untracked.append(item)
-		elif is_committed_file(item):
-			committed.append(item)
-		else:
-			changed.append(item)
+	var output : String = result["output"]
+	var untracked : Array = []
+	var changed   : Array = []
+	var committed : Array = []
+	for item in output.split("\n"):
+		if item:
+			if is_untracked_file(item):
+				untracked.append(item)
+			elif is_committed_file(item):
+				committed.append(item)
+			else:
+				changed.append(item)
 	return {
 		"untracked": untracked, # 未追踪
 		"changed":   changed,   # 修改未提交

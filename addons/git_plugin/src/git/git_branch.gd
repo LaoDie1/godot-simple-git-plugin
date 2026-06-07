@@ -12,22 +12,19 @@ class_name GitPlugin_Branch
 static func show_current() -> String:
 	var result = await GitPlugin_Executor.execute("git branch --show-current")
 	var output = result["output"]
-	if output.size() > 0:
-		return output[0]
-	else:
-		return ""
+	return output
 
 ## 本地分支列表
 static func list() -> Array:
 	var result = await GitPlugin_Executor.execute("git branch --list")
-	return result["output"]
+	return str(result["output"]).split("\n")
 
 ## 列出远程跟踪和本地分支
-static func all():
+static func all() -> Array:
 	var result = await GitPlugin_Executor.execute("git branch --all")
-	return result["output"]
+	return str(result["output"]).split("\n")
 
 ## 远程分支
-static func remotes():
+static func remotes() -> Array:
 	var result = await GitPlugin_Executor.execute("git branch --remotes")
-	return result["output"]
+	return str(result["output"]).split("\n")

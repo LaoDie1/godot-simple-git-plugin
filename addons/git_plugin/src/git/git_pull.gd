@@ -9,10 +9,13 @@
 class_name GitPlugin_Pull
 
 
-static func execute(remote_name: String, branch_name: String):
-	var result
+static func execute(remote_name: String, branch_name: String) -> String:
+	var result : Dictionary
 	if remote_name != "" and branch_name != null:
-		result = await GitPlugin_Executor.execute("git", "pull", remote_name, branch_name, "--allow-unrelated-histories")
+		result = await GitPlugin_Executor.execute("git pull {remote_name} {branch_name} --allow-unrelated-histories".format({
+			"remote_name": remote_name, 
+			"branch_name": branch_name,
+		}))
 	else:
-		result = await GitPlugin_Executor.execute("git", "pull")
+		result = await GitPlugin_Executor.execute("git pull")
 	return result["output"]

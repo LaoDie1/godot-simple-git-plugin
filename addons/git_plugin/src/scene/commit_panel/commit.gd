@@ -115,21 +115,22 @@ func _on_add_all_unstaged_file_pressed() -> void:
 	var files = unstaged_changes_file_tree.get_selected_files()
 	if not files.is_empty():
 		var result = await GitPlugin_Add.execute(files)
-		update()
+		await get_tree().create_timer(0.1).timeout
+		update.call_deferred()
 
 
 func _on_remove_all_pressed() -> void:
 	var files = committed_file_tree.get_selected_files()
 	if not files.is_empty():
 		var result = await GitPlugin_Restore.execute(files)
-		update()
+		update.call_deferred()
 
 
 func _on_add_all_staged_files_pressed() -> void:
 	var files = staged_changes_file_tree.get_selected_files()
 	if not files.is_empty():
 		var result = await GitPlugin_Add.execute(files)
-		update()
+		update.call_deferred()
 
 
 func _on_commit_changes_pressed() -> void:
@@ -144,12 +145,10 @@ func _on_commit_changes_pressed() -> void:
 		return
 	
 	# 提交
-	var result = await GitPlugin_Commit.execute(
-		commit_message_text_edit.text.strip_edges()
-	)
+	await GitPlugin_Commit.execute( commit_message_text_edit.text.strip_edges() )
 	commit_message_text_edit.text = ""
 	
-	update()
+	update.call_deferred()
 	
 	pushed.emit()
 
@@ -171,21 +170,21 @@ func _on_pull_button_pressed():
 
 
 func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
-	var results = await GitPlugin_Add.execute([ file ])
-	if results[0]["error"] == OK:
+	var result = await GitPlugin_Add.execute([ file ])
+	if result["error"] == OK:
 		staged_changes_file_tree.remove_item(item_file)
 		committed_file_tree.add_item(item_file)
 
 
 func _on_unstaged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
-	var results = await GitPlugin_Add.execute([ file ])
-	if results[0]["error"] == OK:
+	var result = await GitPlugin_Add.execute([ file ])
+	if result["error"] == OK:
 		unstaged_changes_file_tree.remove_item(item_file)
 		committed_file_tree.add_item(item_file)
 
 
 func _on_committed_file_tree_actived_file(item_file, file):
-	var results = await GitPlugin_Add.execute([ file ])
-	if results[0]["error"] == OK:
+	var result = await GitPlugin_Add.execute([ file ])
+	if result["error"] == OK:
 		staged_changes_file_tree.add_item(item_file)
 		committed_file_tree.remove_item(item_file)

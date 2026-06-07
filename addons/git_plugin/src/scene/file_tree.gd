@@ -141,6 +141,8 @@ func add_item(item_file: String):
 	# 文件名
 	item.set_text(0, file + " (%s)" % type_desc.capitalize())
 	item.set_tooltip_text(0, item_file)
+	if file.begins_with("addons/apprentice/src/json_ut"):
+		pass
 	item.set_meta("file", file)
 	item.set_meta("item_file", item_file)
 	

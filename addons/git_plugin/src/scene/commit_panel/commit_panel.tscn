@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bdu4643s4wujh" path="res://addons/git_plugin/src/scene/commit_panel/log.tscn" id="3_4rdak"]
 [ext_resource type="PackedScene" uid="uid://oasuqnyckpdc" path="res://addons/git_plugin/src/scene/commit_panel/remotes.tscn" id="4_5kxx2"]
 
-[node name="CommitPanel" type="Panel"]
+[node name="CommitPanel" type="Panel" unique_id=641093459]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_skiuw")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1986188041]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,29 +25,33 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1685558127]
 layout_mode = 2
 
-[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer" unique_id=1536286890]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+current_tab = 0
 
-[node name="Commit" parent="MarginContainer/VBoxContainer/TabContainer" instance=ExtResource("2_aks0q")]
+[node name="Commit" parent="MarginContainer/VBoxContainer/TabContainer" unique_id=1530177310 instance=ExtResource("2_aks0q")]
 unique_name_in_owner = true
 layout_mode = 2
+metadata/_tab_index = 0
 
-[node name="Log" parent="MarginContainer/VBoxContainer/TabContainer" instance=ExtResource("3_4rdak")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[node name="Remotes" parent="MarginContainer/VBoxContainer/TabContainer" instance=ExtResource("4_5kxx2")]
+[node name="Log" parent="MarginContainer/VBoxContainer/TabContainer" unique_id=2021844077 instance=ExtResource("3_4rdak")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
-[node name="Prompt" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Remotes" parent="MarginContainer/VBoxContainer/TabContainer" unique_id=2143617079 instance=ExtResource("4_5kxx2")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="Prompt" type="Label" parent="MarginContainer/VBoxContainer" unique_id=927329341]
 visible = false
 modulate = Color(1, 1, 1, 0.498039)
 layout_mode = 2

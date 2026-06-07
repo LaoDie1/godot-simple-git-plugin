@@ -15,6 +15,7 @@ var plugin_control : GitPlugin_Main
 
 
 func _enter_tree() -> void:
+	GitPlugin_Executor.plugin = self
 	plugin_control = MAIN.instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, plugin_control)
 	
@@ -27,6 +28,7 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_control_from_docks(plugin_control)
+	GitPlugin_Executor.plugin = null
 
 
 var _updating : bool = false

@@ -9,7 +9,7 @@ class_name GitPlugin_Diff
 
 
 static func execute():
-	var result = await GitPlugin_Executor.execute("git", "diff")
+	var result = await GitPlugin_Executor.execute("git diff")
 	return _handle_result(result["output"])
 
 
@@ -40,5 +40,5 @@ static func _handle_result(output: Array):
 
 ## 比较文件的差异
 static func diff_file(commit_id: String, file_path: String):
-	var result = await GitPlugin_Executor.execute("git", "diff", commit_id, file_path)
+	var result = await GitPlugin_Executor.execute("git diff %s %s" % [commit_id, file_path])
 	

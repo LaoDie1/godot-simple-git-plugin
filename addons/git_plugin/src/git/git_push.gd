@@ -17,6 +17,9 @@ static func set_upstream(remote_name: String, branch_name: String):
 
 ## 执行推送
 static func execute(remote_name: String, branch_name: String):
-	var result = await GitPlugin_Executor.execute("git", "push", "-u", remote_name, branch_name )
-	print("推送完成")
+	var result = await GitPlugin_Executor.execute("git push -u %s %s" % [remote_name, branch_name] )
+	if result["error"] == OK:
+		print("推送完成")
+	else:
+		printerr("推送失败：", result)
 	return result["output"]

@@ -8,6 +8,6 @@
 class_name GitPlugin_Commit
 
 
-static func execute(desc: String):
-	var result = await GitPlugin_Executor.execute("git commit -m \"%s\"" % desc)
+static func execute(desc: String) -> String:
+	var result = await GitPlugin_Executor.execute('git commit -m "%s"' % desc)
 	return result["output"]

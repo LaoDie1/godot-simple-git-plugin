@@ -9,5 +9,7 @@ class_name GitPlugin_ls_files
 
 
 ## 列出所有跟踪的文件
-static func all():
-	return await GitPlugin_Executor.execute("git ls-files")
+static func all() -> PackedStringArray:
+	var result = await GitPlugin_Executor.execute("git ls-files")
+	var output: String = result["output"]
+	return output.split("\n")

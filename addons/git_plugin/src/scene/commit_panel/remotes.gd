@@ -61,8 +61,8 @@ func update():
 	_urls.clear()
 	remote_url_tree.clear()
 	_root = remote_url_tree.create_item()
-	var result = await GitPlugin_Remote.verbose()
-	for item: String in result:
+	var result : String = await GitPlugin_Remote.verbose()
+	for item: String in result.split("\n"):
 		if item != "":
 			var split = item.split("\t")
 			var remote_name = split[0]
