@@ -36,6 +36,9 @@ func _ready() -> void:
 	remote_url_tree.set_column_title(0, "Name")
 	remote_url_tree.set_column_title(1, "URL")
 	
+	%AddRemoteUrlButton.icon = GitPlugin_Icons.get_icon("Add")
+	%UpdateButton.icon = GitPlugin_Icons.get_icon("Reload")
+	
 	update()
 
 

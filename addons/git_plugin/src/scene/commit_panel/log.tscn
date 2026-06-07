@@ -62,6 +62,7 @@ popup/item_4/text = "All"
 popup/item_4/id = 4
 
 [node name="UpdateLogButton" type="Button" parent="HBoxContainer" unique_id=1404578893]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -86,12 +87,15 @@ placeholder_text = "Commit ID"
 editable = false
 
 [node name="CopyButton" type="Button" parent="HBoxContainer2" unique_id=153455969]
+unique_name_in_owner = true
 layout_mode = 2
 icon = SubResource("ImageTexture_w580p")
 
 [node name="VSplitContainer" type="VSplitContainer" parent="." unique_id=1952690314]
 layout_mode = 2
 size_flags_vertical = 3
+split_offsets = PackedInt32Array(-138)
+split_offset = -138
 
 [node name="LogItemTree" type="Tree" parent="VSplitContainer" unique_id=530124861]
 unique_name_in_owner = true

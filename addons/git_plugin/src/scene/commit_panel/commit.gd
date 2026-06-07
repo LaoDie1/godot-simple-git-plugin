@@ -34,6 +34,11 @@ signal pushed
 func _ready() -> void:
 	# TODO 对两个 OptionButton 添加切换远程名称和分支的功能
 	
+	%AddAllUnstagedFile.icon = GitPlugin_Icons.get_icon("MoveDown")
+	%AddAllStagedFiles.icon = GitPlugin_Icons.get_icon("MoveDown")
+	%RemoveAll.icon = GitPlugin_Icons.get_icon("MoveUp")
+	%UpdateFiles.icon = GitPlugin_Icons.get_icon("Reload")
+	
 	if not DirAccess.dir_exists_absolute(".git"):
 		return
 	

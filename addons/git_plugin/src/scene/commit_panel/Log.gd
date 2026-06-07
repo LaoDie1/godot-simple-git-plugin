@@ -37,6 +37,9 @@ func _ready() -> void:
 	log_item_tree.set_column_title_alignment(2, HORIZONTAL_ALIGNMENT_LEFT)
 	
 	update_log.call_deferred()
+	
+	%UpdateLogButton.icon = GitPlugin_Icons.get_icon("Reload")
+	%CopyButton.icon = GitPlugin_Icons.get_icon("ActionCopy")
 
 
 

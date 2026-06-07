@@ -21,9 +21,9 @@ static func get_icon_by_path(file: String) -> Texture2D:
 				return get_icon("File")
 
 static func get_icon(name: String) -> Texture2D:
+	if Engine.is_editor_hint():
+		return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
 	if DisplayServer.is_dark_mode_supported():
 		if not DisplayServer.is_dark_mode():
 			return ICON.get_icon(name, "EditorIcons")
-	if Engine.is_editor_hint():
-		return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
 	return ICON.get_icon(name, "EditorIcons")
