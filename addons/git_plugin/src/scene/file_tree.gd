@@ -144,8 +144,10 @@ func add_item(item_file: String):
 	# 按钮
 	if enabled_edit and Engine.is_editor_hint():
 		item.add_button(0, GitPlugin_Icons.get_icon("File"), ButtonID.EDIT) # 编辑
+		item.set_button_tooltip_text(0, ButtonID.EDIT, "Edit this file")
 	if enabled_delete:
 		item.add_button(0, GitPlugin_Icons.get_icon("Close"), ButtonID.DELETE) # 删除
+		item.set_button_tooltip_text(0, ButtonID.EDIT, "Delete this file")
 	if enabled_action:
 		if action_texture:
 			item.add_button(0, action_texture, ButtonID.ACTIVE)

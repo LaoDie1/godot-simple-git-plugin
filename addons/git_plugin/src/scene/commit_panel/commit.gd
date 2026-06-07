@@ -97,15 +97,17 @@ func edit_file(item_file: String, file: String):
 		
 		match file.get_extension():
 			"tres", "res", "gd":
-				var res = load(file)
+				var res : Resource = ResourceLoader.get_cached_ref(file)
 				EditorInterface.edit_resource(res)
 			"tscn", "scn":
 				EditorInterface.open_scene_from_path(file)
+			_:
+				pass
 		
-		if ResourceLoader.exists(file):
-			print_debug("编辑文件：", file)
-			EditorInterface.get_file_system_dock().navigate_to_path(file)
-			EditorInterface.select_file(file)
+		EditorInterface.get_file_system_dock().navigate_to_path(file)
+		EditorInterface.select_file(file)
+	else:
+		print_rich("Cannot edit this file: [s]", file, "[/s]. File type: [i]", file.get_extension(), "[/i]")
 
 
 #============================================================
