@@ -21,5 +21,5 @@ static func execute(remote_name: String, branch_name: String) -> String:
 	if result["error"] == OK:
 		print("推送完成")
 	else:
-		printerr(result["output"])
+		print_rich("[b]INFO:[/b] %s" % result["output"])
 	return result["output"]
