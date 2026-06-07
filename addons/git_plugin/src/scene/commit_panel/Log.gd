@@ -16,6 +16,7 @@ extends VBoxContainer
 
 @onready var log_tree_root : TreeItem = log_item_tree.create_item()
 @onready var file_item_root : TreeItem = file_item_tree.create_item()
+@onready var command_request: GitPlugin_CommandRequest = $CommandRequest
 
 
 
@@ -66,8 +67,8 @@ func update_log():
 		log_number = int(item_text)
 	
 	# 提交列表
-	var result = await GitPlugin_Log.execute(log_number)
-	var idx = 0
+	var result : Array = await GitPlugin_Log.execute(log_number, command_request)
+	var idx : int = 0
 	for data in result:
 		var tree_item = log_item_tree.create_item(log_tree_root)
 		tree_item.set_icon(0, GitPlugin_Icons.get_icon("History"))

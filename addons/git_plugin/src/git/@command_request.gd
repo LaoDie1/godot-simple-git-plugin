@@ -8,6 +8,7 @@
 ## 命令请求
 ##
 ##以 [signal SceneTree.process_frame] 信号执行 [method OS.execute_with_pipe] 命令，以非阻塞的方式执行命令
+@tool
 class_name GitPlugin_CommandRequest
 extends Node
 
