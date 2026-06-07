@@ -88,6 +88,10 @@ func _on_log_number_option_item_selected(index):
 	update_log.call_deferred()
 
 
+enum ButtonID {
+	COPY,
+}
+
 func _on_log_item_tree_item_selected():
 	commit_id_line_edit.text = ""
 	file_item_tree.clear()
@@ -99,7 +103,7 @@ func _on_log_item_tree_item_selected():
 		var commit_id = str(data["id"])
 		commit_id_line_edit.text = commit_id
 		
-		var files = await GitPlugin_Show.files(commit_id)
+		var files = await GitPlugin_Show.files(commit_id, command_request)
 		for file:String in files:
 			var file_item : TreeItem = file_item_tree.create_item(file_item_root)
 			file_item.set_text(0, file)
@@ -107,17 +111,24 @@ func _on_log_item_tree_item_selected():
 			file_item.set_metadata(0, file)
 			
 			if file.get_file() != "":
-				file_item.add_button(0, GitPlugin_Icons.get_icon("ActionCopy"))
-
+				file_item.add_button(0, GitPlugin_Icons.get_icon("ActionCopy"), ButtonID.COPY)
+				file_item.set_button_tooltip_text(0, ButtonID.COPY, "Copy this file path")
 
 func _on_copy_button_pressed():
 	var commit_id : String = commit_id_line_edit.text
 	DisplayServer.clipboard_set(commit_id.strip_edges())
-	print_debug("已复制：", commit_id)
+	print_debug("Copy: ", commit_id)
 
 
 func _on_file_item_tree_button_clicked(item: TreeItem, column, id, mouse_button_index):
-	if id == 0:
+	if id == ButtonID.COPY:
 		var file_path = item.get_metadata(0)
 		DisplayServer.clipboard_set(file_path)
-		print_debug("已复制：", file_path)
+		print_debug("Copy: ", file_path)
+
+
+func _on_file_item_tree_item_activated() -> void:
+	var selected_item : TreeItem = file_item_tree.get_selected()
+	if selected_item:
+		var file : String = selected_item.get_metadata(0)
+		GitPlugin_Util.edit_file(file)

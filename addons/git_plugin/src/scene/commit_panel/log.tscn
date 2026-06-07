@@ -298,3 +298,4 @@ hide_root = true
 [connection signal="pressed" from="HBoxContainer2/CopyButton" to="." method="_on_copy_button_pressed"]
 [connection signal="item_selected" from="VSplitContainer/LogItemTree" to="." method="_on_log_item_tree_item_selected"]
 [connection signal="button_clicked" from="VSplitContainer/VBoxContainer/FileItemTree" to="." method="_on_file_item_tree_button_clicked"]
+[connection signal="item_activated" from="VSplitContainer/VBoxContainer/FileItemTree" to="." method="_on_file_item_tree_item_activated"]

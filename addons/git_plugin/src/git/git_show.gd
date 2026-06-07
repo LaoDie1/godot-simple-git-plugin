@@ -9,8 +9,8 @@ class_name GitPlugin_Show
 
 
 ## 此次提交的文件列表
-static func files(commit_id: String) -> Array[String]:
-	var result : Dictionary = await GitPlugin_Executor.execute("git show --name-only %s" % commit_id)
+static func files(commit_id: String, request: GitPlugin_CommandRequest = null) -> Array[String]:
+	var result : Dictionary = await GitPlugin_Executor.execute("git show --name-only %s" % commit_id, request)
 	var output : String = result["output"]
 	
 	var lines : PackedStringArray = output.split("\n")
