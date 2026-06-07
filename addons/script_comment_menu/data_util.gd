@@ -307,4 +307,3 @@ static func as_set_hash(list: Array) -> int:
 	for i in list:
 		h += hash(i)
 	return h
-

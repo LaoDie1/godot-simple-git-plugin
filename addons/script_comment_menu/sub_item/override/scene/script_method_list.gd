@@ -66,4 +66,3 @@ func show_script_list_data(scripts: Array):
 			var method : String = method_data['name']
 			item_list.add_item(method)
 	
-
