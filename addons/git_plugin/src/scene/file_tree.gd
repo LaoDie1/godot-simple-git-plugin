@@ -15,7 +15,7 @@ extends Tree
 signal actived_file(item_text: String, file: String)
 signal edited_file(item_text: String, file: String)
 signal deleted_file(item_text: String, file: String)
-
+signal double_clicked_file(item_text: String, file: String)
 
 enum ButtonID {
 	EDIT,
@@ -28,6 +28,7 @@ enum ButtonID {
 @export var enabled_delete : bool = true
 @export var action_texture : Texture2D
 @export_multiline() var active_button_tooltip: String = ""
+@export_subgroup("Item Font Color")
 @export var new_file_color : Color = Color8(143, 171, 130)
 @export var modified_file_color : Color = Color8(250, 227, 69)
 @export var deleted_file_color : Color = Color8(196, 89, 89)
@@ -44,14 +45,14 @@ func _init() -> void:
 	
 	_root = create_item()
 	button_clicked.connect(button_click)
-	#item_activated.connect(
-		#func():
-			## 双击
-			#var item = get_selected()
-			#var item_text = item.get_meta("item_text")
-			#var file = item.get_meta("file")
-			#actived_file.emit(item_text, file)
-	#)
+	item_activated.connect(
+		func():
+			# 双击
+			var item = get_selected()
+			var item_text = item.get_meta("item_text")
+			var file = item.get_meta("file")
+			double_clicked_file.emit(item_text, file)
+	)
 	item_selected.connect(
 		func():
 			await Engine.get_main_loop().process_frame

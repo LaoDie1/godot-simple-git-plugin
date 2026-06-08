@@ -59,6 +59,9 @@ func update_log():
 	log_tree_root = log_item_tree.create_item()
 	file_item_root = file_item_tree.create_item()
 	
+	# 提交列表
+	var unpush_list : Array = await GitPlugin_Commit.rev_list(command_request)
+	
 	# 显示的日志数量
 	var log_number : int = 0
 	var item_id = log_number_option.get_selected_id()
@@ -66,13 +69,18 @@ func update_log():
 	if item_text != "All":
 		log_number = int(item_text)
 	
-	# 提交列表
 	var result : Array = await GitPlugin_Log.execute(log_number, command_request)
 	var idx : int = 0
+	var icon: Texture2D
 	for data in result:
-		var tree_item = log_item_tree.create_item(log_tree_root)
-		tree_item.set_icon(0, GitPlugin_Icons.get_icon("History"))
-		tree_item.set_text(0, data["id"].substr(0, 11))
+		var tree_item : TreeItem = log_item_tree.create_item(log_tree_root)
+		if not unpush_list.has(data["id"]):
+			icon = GitPlugin_Icons.get_icon("History")
+		else:
+			#icon = GitPlugin_Icons.get_icon("ProfilerAutostartWarning")
+			icon = GitPlugin_Icons.get_icon("Timer")
+		tree_item.set_icon(0, icon)  # 图标
+		tree_item.set_text(0, data["id"].substr(0, 11))  # Commit ID
 		tree_item.set_text(1, data["date"])
 		tree_item.set_text(2, data["desc"])
 		tree_item.set_metadata(0, data)
