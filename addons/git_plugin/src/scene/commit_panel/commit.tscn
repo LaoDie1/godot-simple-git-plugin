@@ -761,20 +761,20 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 24
 theme_override_styles/separator = SubResource("StyleBoxEmpty_l31ai")
 
-[node name="PushButton" type="Button" parent="MarginContainer/HBoxContainer2" unique_id=1881529875]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 0)
-layout_mode = 2
-text = "Push"
-
-[node name="VSeparator2" type="VSeparator" parent="MarginContainer/HBoxContainer2" unique_id=2047757617]
-layout_mode = 2
-
 [node name="PullButton" type="Button" parent="MarginContainer/HBoxContainer2" unique_id=852676208]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 text = "Pull"
+
+[node name="VSeparator2" type="VSeparator" parent="MarginContainer/HBoxContainer2" unique_id=2047757617]
+layout_mode = 2
+
+[node name="PushButton" type="Button" parent="MarginContainer/HBoxContainer2" unique_id=1881529875]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Push"
 
 [connection signal="pressed" from="HBoxContainer/UpdateFiles" to="." method="update"]
 [connection signal="pressed" from="VSplitContainer/VBoxContainer/HBoxContainer/AddAllUnstagedFile" to="." method="_on_add_all_unstaged_file_pressed"]
@@ -790,5 +790,5 @@ text = "Pull"
 [connection signal="double_clicked_file" from="VSplitContainer/VBoxContainer3/CommittedFileTree" to="." method="edit_file"]
 [connection signal="edited_file" from="VSplitContainer/VBoxContainer3/CommittedFileTree" to="." method="edit_file"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer2/CommitChanges" to="." method="_on_commit_changes_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer2/PushButton" to="." method="_on_push_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer2/PullButton" to="." method="_on_pull_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer2/PushButton" to="." method="_on_push_pressed"]

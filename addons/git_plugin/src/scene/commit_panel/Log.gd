@@ -81,8 +81,10 @@ func update_log():
 			icon = GitPlugin_Icons.get_icon("Timer")
 		tree_item.set_icon(0, icon)  # 图标
 		tree_item.set_text(0, data["id"].substr(0, 11))  # Commit ID
+		tree_item.set_tooltip_text(0, data["id"])
 		tree_item.set_text(1, data["date"])
 		tree_item.set_text(2, data["desc"])
+		
 		tree_item.set_metadata(0, data)
 		
 		idx += 1
