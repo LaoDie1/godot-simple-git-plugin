@@ -16,9 +16,11 @@ static func get_icon_by_path(file: String) -> Texture2D:
 	match ext:
 		"gd": return get_icon("Script")
 		"tscn", "scn": return get_icon("PackedScene")
-		"tres", "res": return get_icon("ResourcePreloader")
-		"png", "jpeg", "jpg", "bmp", "svg":
-			return get_icon("Image")
+		"tres", "res": 
+			var res : Resource = ResourceLoader.get_cached_ref(file)
+			if res:
+				return get_icon(res.get_class())
+			return get_icon("ResourcePreloader")
 		"uid":
 			if not _handle_icon_cache.has(ext):
 				var texture : Texture2D = get_icon("UID")
@@ -28,6 +30,8 @@ static func get_icon_by_path(file: String) -> Texture2D:
 			return _handle_icon_cache[ext]
 		"import":
 			return get_icon("ArrowRight")
+		"png", "svg", "jpeg", "jpg", "webp",  "bmp", "ktx", "dds", "tag":
+			return get_icon("Image")
 		_:
 			if file.get_file() == "":
 				return get_icon("Folder")
