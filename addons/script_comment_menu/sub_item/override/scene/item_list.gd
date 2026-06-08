@@ -85,4 +85,3 @@ func _pressed(check: CHECK_LABEL_SCRIPT):
 				all_item[i].selected = selected
 	
 	last_press_check = check
-

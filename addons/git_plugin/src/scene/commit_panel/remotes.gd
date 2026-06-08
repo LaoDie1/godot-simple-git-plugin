@@ -20,9 +20,6 @@ var _url_regex : RegEx = RegEx.new()
 var _urls : Dictionary = {}
 
 
-#============================================================
-#  内置
-#============================================================
 func _init() -> void:
 	_url_regex.compile("(?<url>.*?)\\s+\\(\\w+\\)")
 
@@ -42,10 +39,6 @@ func _ready() -> void:
 	update()
 
 
-
-#============================================================
-#  自定义
-#============================================================
 func add_item(remote_name: String, url: String):
 	var re = _url_regex.search(url)
 	if re:
@@ -71,7 +64,6 @@ func update():
 			var remote_name = split[0]
 			var url = split[1]
 			add_item(remote_name, url)
-
 
 
 #============================================================

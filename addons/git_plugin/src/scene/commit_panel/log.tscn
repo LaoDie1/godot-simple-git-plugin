@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bh3cg6v3f4v5n" path="res://addons/git_plugin/src/scene/commit_panel/Log.gd" id="1_wcwv8"]
 [ext_resource type="Script" uid="uid://dx7pxgl3rpvwj" path="res://addons/git_plugin/src/git/@command_request.gd" id="2_ytyk7"]
 
-[sub_resource type="DPITexture" id="DPITexture_wbeix"]
+[sub_resource type="DPITexture" id="DPITexture_ytyk7"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M5 8a4 4 0 1 1 4 4v2a6 6 0 1 0-6-6H1l3 4 3-4z\"/></svg>
 "
 color_map = {
@@ -238,7 +238,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-icon = SubResource("DPITexture_wbeix")
+icon = SubResource("DPITexture_ytyk7")
 icon_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="." unique_id=807107609]
@@ -255,6 +255,7 @@ text = "ID"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+focus_neighbor_top = NodePath("../../VSplitContainer/VBoxContainer/FileItemTree")
 placeholder_text = "Commit ID"
 editable = false
 
@@ -273,6 +274,8 @@ split_offset = -138
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_bottom = NodePath("../VBoxContainer/FileItemTree")
+focus_next = NodePath("../VBoxContainer/FileItemTree")
 columns = 3
 column_titles_visible = true
 hide_folding = true
@@ -291,8 +294,17 @@ text = "File List"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_top = NodePath("../../LogItemTree")
+focus_neighbor_bottom = NodePath("../../../HBoxContainer2/CommitIDLineEdit")
+focus_previous = NodePath("../../LogItemTree")
 hide_folding = true
 hide_root = true
+
+[node name="DescLabel" type="Label" parent="VSplitContainer/VBoxContainer" unique_id=2052653208]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.5019608)
+layout_mode = 2
+autowrap_mode = 1
 
 [connection signal="item_selected" from="HBoxContainer/LogNumberOption" to="." method="_on_log_number_option_item_selected"]
 [connection signal="pressed" from="HBoxContainer/UpdateLogButton" to="." method="update_log"]

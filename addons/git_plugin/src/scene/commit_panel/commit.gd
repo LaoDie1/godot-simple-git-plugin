@@ -28,9 +28,6 @@ signal pushed
 @onready var committed_file_count_label = %CommittedFileCountLabel
 
 
-#============================================================
-#  内置
-#============================================================
 func _ready() -> void:
 	# TODO 对两个 OptionButton 添加切换远程名称和分支的功能
 	
@@ -71,9 +68,6 @@ func _ready() -> void:
 	update.call_deferred()
 
 
-#============================================================
-#  自定义
-#============================================================
 ## 更新文件列表
 func update():
 	if not visible:

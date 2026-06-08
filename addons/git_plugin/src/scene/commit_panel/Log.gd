@@ -17,6 +17,7 @@ extends VBoxContainer
 @onready var log_tree_root : TreeItem = log_item_tree.create_item()
 @onready var file_item_root : TreeItem = file_item_tree.create_item()
 @onready var command_request: GitPlugin_CommandRequest = $CommandRequest
+@onready var desc_label: Label = %DescLabel
 
 var _last_update_tick: int = -1
 
@@ -46,10 +47,6 @@ func _ready() -> void:
 	%CopyButton.icon = GitPlugin_Icons.get_icon("ActionCopy")
 
 
-
-#============================================================
-#  自定义
-#============================================================
 ## 更新日志列表
 func update_log():
 	if not visible:
@@ -97,14 +94,20 @@ enum ButtonID {
 
 func _on_log_item_tree_item_selected():
 	commit_id_line_edit.text = ""
+	desc_label.text = ""
 	file_item_tree.clear()
 	file_item_root = file_item_tree.create_item()
 	
 	var item = log_item_tree.get_selected()
 	if item:
-		var data = item.get_metadata(0)
-		var commit_id = str(data["id"])
+		var data : Dictionary = item.get_metadata(0)
+		var commit_id : String = str(data["id"])
 		commit_id_line_edit.text = commit_id
+		
+		var date : String = data["date"]
+		
+		var desc : String = data["desc"]
+		desc_label.text = desc
 		
 		var files = await GitPlugin_Show.files(commit_id, command_request)
 		for file:String in files:
