@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://84bmhhygqf2"]
+
+[ext_resource type="Script" uid="uid://cy6b7ijkojf7q" path="res://addons/git_plugin/src/scene/file_diff/file_diff.gd" id="1_u1d4j"]
+[ext_resource type="Script" uid="uid://buwhjnaduo5w0" path="res://addons/git_plugin/src/scene/file_diff/git_diff_highlighter.gd" id="2_o55s5"]
+
+[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_u1d4j"]
+script = ExtResource("2_o55s5")
+metadata/_custom_type_script = "uid://buwhjnaduo5w0"
+
+[node name="Diff" type="Control" unique_id=1644204592 node_paths=PackedStringArray("code_edit", "container")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_u1d4j")
+code_edit = NodePath("CodeEdit")
+container = NodePath("ScrollContainer/VBoxContainer")
+
+[node name="CodeEdit" type="CodeEdit" parent="." unique_id=524393443]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+scroll_fit_content_height = true
+syntax_highlighter = SubResource("SyntaxHighlighter_u1d4j")
+highlight_all_occurrences = true
+highlight_current_line = true
+gutters_draw_line_numbers = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=622810669]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=1460774856]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16

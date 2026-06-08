@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dbbjsptdhtmq" path="res://addons/git_plugin/src/scene/commit_panel/commit.tscn" id="2_aks0q"]
 [ext_resource type="PackedScene" uid="uid://bdu4643s4wujh" path="res://addons/git_plugin/src/scene/commit_panel/log.tscn" id="3_4rdak"]
 [ext_resource type="PackedScene" uid="uid://oasuqnyckpdc" path="res://addons/git_plugin/src/scene/commit_panel/remotes.tscn" id="4_5kxx2"]
+[ext_resource type="PackedScene" uid="uid://84bmhhygqf2" path="res://addons/git_plugin/src/scene/file_diff/file_diff.tscn" id="5_a0c2t"]
 
 [node name="CommitPanel" type="Panel" unique_id=641093459]
 anchors_preset = 15
@@ -50,6 +51,11 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
+
+[node name="Diff" parent="MarginContainer/VBoxContainer/TabContainer" unique_id=1644204592 instance=ExtResource("5_a0c2t")]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3
 
 [node name="Prompt" type="Label" parent="MarginContainer/VBoxContainer" unique_id=927329341]
 visible = false

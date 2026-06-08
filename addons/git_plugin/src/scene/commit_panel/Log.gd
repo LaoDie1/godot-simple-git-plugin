@@ -19,6 +19,7 @@ extends VBoxContainer
 @onready var command_request: GitPlugin_CommandRequest = $CommandRequest
 @onready var desc_label: Label = %DescLabel
 
+var _show_count_index_path: String = "res://.godot/log_show_count.data"
 var _last_update_tick: int = -1
 
 
@@ -30,21 +31,34 @@ func _ready() -> void:
 			_last_update_tick = Time.get_ticks_msec()
 	)
 	
+	%UpdateLogButton.icon = GitPlugin_Icons.get_icon("Reload")
+	%CopyButton.icon = GitPlugin_Icons.get_icon("ActionCopy")
+	
+	# 显示条目
 	log_number_option.clear()
 	for item in ["10", "20", "50", "100", "All"]:
 		log_number_option.add_item(item)
+	if FileAccess.file_exists(_show_count_index_path):
+		var text : String = FileAccess.get_file_as_string(_show_count_index_path)
+		var index : int = int(text)
+		if index < log_number_option.item_count:
+			log_number_option.select(index)
+	else:
+		log_number_option.select(1) #默认显示的条数
 	
+	# 设置 Tree 的显示样式
 	log_item_tree.set_column_title(0, "Commit ID")
+	log_item_tree.set_column_expand(0, false)
+	log_item_tree.set_column_clip_content(0, false)
+	log_item_tree.set_column_custom_minimum_width(0, 120)
 	log_item_tree.set_column_title(1, "Date")
 	log_item_tree.set_column_title(2, "Description")
 	log_item_tree.set_column_title_alignment(0, HORIZONTAL_ALIGNMENT_LEFT)
 	log_item_tree.set_column_title_alignment(1, HORIZONTAL_ALIGNMENT_LEFT)
 	log_item_tree.set_column_title_alignment(2, HORIZONTAL_ALIGNMENT_LEFT)
 	
+	# 更新内容
 	update_log.call_deferred()
-	
-	%UpdateLogButton.icon = GitPlugin_Icons.get_icon("Reload")
-	%CopyButton.icon = GitPlugin_Icons.get_icon("ActionCopy")
 
 
 ## 更新日志列表
@@ -90,11 +104,14 @@ func update_log():
 		idx += 1
 
 
-
 #============================================================
 #  连接信号
 #============================================================
 func _on_log_number_option_item_selected(index):
+	var file := FileAccess.open(_show_count_index_path, FileAccess.WRITE)
+	if file:
+		file.store_string(str(index))
+		file.close()
 	update_log.call_deferred()
 
 
@@ -113,13 +130,19 @@ func _on_log_item_tree_item_selected():
 		var data : Dictionary = item.get_metadata(0)
 		var commit_id : String = str(data["id"])
 		commit_id_line_edit.text = commit_id
-		
 		var date : String = data["date"]
-		
 		var desc : String = data["desc"]
 		desc_label.text = desc
 		
-		var files = await GitPlugin_Show.files(commit_id, command_request)
+		# 获取这次提交的文件列表
+		var files : Array 
+		if data.has("files"):
+			files = data["files"]
+		else:
+			files = await GitPlugin_Show.files(commit_id, command_request)
+			data["files"] = files #缓存
+		
+		# 加载文件列表
 		for file:String in files:
 			var file_item : TreeItem = file_item_tree.create_item(file_item_root)
 			file_item.set_text(0, file)
@@ -129,6 +152,7 @@ func _on_log_item_tree_item_selected():
 			if file.get_file() != "":
 				file_item.add_button(0, GitPlugin_Icons.get_icon("ActionCopy"), ButtonID.COPY)
 				file_item.set_button_tooltip_text(0, ButtonID.COPY, "Copy this file path")
+
 
 func _on_copy_button_pressed():
 	var commit_id : String = commit_id_line_edit.text
