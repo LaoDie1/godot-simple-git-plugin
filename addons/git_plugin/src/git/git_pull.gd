@@ -11,11 +11,16 @@ class_name GitPlugin_Pull
 
 static func execute(remote_name: String, branch_name: String) -> String:
 	var result : Dictionary
-	if remote_name != "" and branch_name != null:
+	if remote_name != "" and branch_name != "":
 		result = await GitPlugin_Executor.execute("git pull {remote_name} {branch_name} --allow-unrelated-histories".format({
 			"remote_name": remote_name, 
 			"branch_name": branch_name,
 		}))
 	else:
 		result = await GitPlugin_Executor.execute("git pull")
+	
+	if result["error"] == OK:
+		print("推送完成")
+	else:
+		print_rich("[b]INFO:[/b] %s" % result["output"])
 	return result["output"]
