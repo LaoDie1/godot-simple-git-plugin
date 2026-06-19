@@ -103,22 +103,21 @@ func _on_add_all_unstaged_file_pressed() -> void:
 	var files = unstaged_changes_file_tree.get_selected_files()
 	if not files.is_empty():
 		var result = await GitPlugin_Add.execute(files)
-		await get_tree().create_timer(0.1).timeout
-		update.call_deferred()
+		get_tree().create_timer(0.1).timeout.connect(update)
 
 
 func _on_remove_all_pressed() -> void:
 	var files = committed_file_tree.get_selected_files()
 	if not files.is_empty():
 		var result = await GitPlugin_Restore.execute(files)
-		update.call_deferred()
+		get_tree().create_timer(0.1).timeout.connect(update)
 
 
 func _on_add_all_staged_files_pressed() -> void:
 	var files = staged_changes_file_tree.get_selected_files()
 	if not files.is_empty():
 		var result = await GitPlugin_Add.execute(files)
-		update.call_deferred()
+		get_tree().create_timer(0.1).timeout.connect(update)
 
 
 func _on_commit_changes_pressed() -> void:
@@ -136,8 +135,8 @@ func _on_commit_changes_pressed() -> void:
 	await GitPlugin_Commit.execute( commit_message_text_edit.text.strip_edges() )
 	commit_message_text_edit.text = ""
 	
-	update.call_deferred()
-	
+	await get_tree().create_timer(0.1).timeout
+	update()
 	pushed.emit()
 
 

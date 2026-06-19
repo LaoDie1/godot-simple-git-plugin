@@ -38,5 +38,6 @@ func update_commit_files(resource):
 	
 	_updating = true
 	await Engine.get_main_loop().process_frame
+	GitPlugin_Executor.plugin = self
 	plugin_control.commit_panel.commit.update()
 	_updating = false

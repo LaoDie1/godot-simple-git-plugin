@@ -1,0 +1,1607 @@
+#============================================================
+#    Func Util
+#============================================================
+# - datetime: 2022-12-08 23:25:09
+# - version: 4.x
+#============================================================
+## 执行回调方法工具类
+##
+##这个工具类可以通过调用执行 execute 开头的方法以方便的执行一些比较另类的操作。
+##[br]
+##[br]比如控制节点向目标移动一小段距离：
+##[codeblock]
+##var duration = 1.0
+##var speed = 50.0
+##FuncUtil.execute_fragment_process(duration, func():
+##    var dir = Node2D.global_position.direction_to(target.global_position)
+##    Node2D.global_position += dir * speed * get_physics_process_delta_time()
+##, Node2D)
+##[/codeblock] 
+class_name FuncUtil
+
+
+class BaseExecutor extends Timer:
+	var _finished_callable := Callable()
+	
+	func _add_to_scene(to: Node = null):
+		if to == null or not is_instance_valid(to):
+			to = Engine.get_main_loop().current_scene
+		to.add_child(self)
+	
+	func _finished():
+		if _finished_callable.is_valid():
+			_finished_callable.call()
+	
+	# 设置完成回调
+	func set_finish_callback(callback: Callable):
+		_finished_callable = callback
+		return self
+	
+	func _exit_tree():
+		if is_instance_valid(self):
+			queue_free()
+	
+	# 直接清除
+	func kill():
+		stop()
+		queue_free()
+	
+	func add_to(node: Node) -> BaseExecutor:
+		return self
+
+
+#============================================================
+#  执行对象
+#============================================================
+# 普通的按照线程执行的对象
+class ExecutorObject extends BaseExecutor:
+	
+	var _finish : bool = false
+	var _condition : Callable = func(): return true
+	var _callable : Callable
+	
+	func _init(callback: Callable, process_callback):
+		_callable = callback
+		# 时间结束调用完成删除自身
+		self.timeout.connect(_finished, Object.CONNECT_ONE_SHOT)
+		self.process_callback = process_callback
+	
+	func _ready():
+		self.start()
+		self.set_process(process_callback == Timer.TIMER_PROCESS_IDLE)
+		self.set_physics_process(process_callback == Timer.TIMER_PROCESS_PHYSICS)
+	
+	func _process(delta):
+		if (
+			_condition.call()
+			and is_instance_valid(_callable.get_object())
+		):
+			_callable.call()
+		else:
+			queue_free()
+
+	func _physics_process(delta):
+		if (
+			_condition.call()
+			and is_instance_valid(_callable.get_object())
+		):
+			_callable.call()
+		else:
+			queue_free()
+	
+	func _finished():
+		super._finished()
+		_finish = true
+		self.queue_free()
+		set_physics_process(false)
+		set_process(false)
+	
+	## 设置执行完成时调用的方法
+	func set_finish_callback(callback: Callable) -> ExecutorObject:
+		super.set_finish_callback(callback)
+		return self
+	
+	## 设置执行时中断并结束的条件
+	func set_finish_condition(condition: Callable) -> ExecutorObject:
+		_condition = condition
+		return self
+
+
+#============================================================
+#  一次性回调
+#============================================================
+class _OnceTimer extends BaseExecutor:
+	var _callable: Callable
+	
+	func _init(callback: Callable, delay_time: float, over_time: float):
+		_callable = callback
+		self.timeout.connect(_finished)
+		self.one_shot = true
+		self.ready.connect(func():
+			if delay_time > 0:
+				await Engine.get_main_loop().create_timer(delay_time).timeout
+			callback.call()
+			if over_time > 0:
+				self.wait_time = over_time
+				self.start(over_time)
+			else:
+				self.timeout.emit()
+		, Object.CONNECT_ONE_SHOT)
+	
+	func _finished():
+		super._finished()
+		self.queue_free()
+	
+
+
+#============================================================
+#  间隔执行计时器
+#============================================================
+class _IntermittentTimer extends BaseExecutor:
+	
+	var _amount_left : int = 0
+	var _max_count: int = 0
+	var _callable : Callable
+	
+	## 剩余数量
+	func get_amount_left() -> int:
+		return _amount_left
+	
+	## 获取最大次数
+	func get_max_amount() -> int:
+		return _max_count
+	
+	func _init(callback: Callable, max_count: int) -> void:
+		assert(max_count > 0, "最大执行次数必须超过0！")
+		_max_count = max_count
+		_amount_left = max_count
+		_callable = callback
+		self.timeout.connect(func():
+			callback.call()
+			if _amount_left > 1:
+				_amount_left -= 1
+			else:
+				self.stop()
+				_finished()
+				self.queue_free()
+		)
+	
+	## 执行结束调用这个回调
+	func set_finish_callback(callback: Callable) -> _IntermittentTimer:
+		_finished_callable = callback
+		return self
+
+
+#============================================================
+#  列表时间间隔执行计时器
+#============================================================
+class _IntermittentListTimer extends BaseExecutor:
+	var _list = []
+	var _callable : Callable = Callable()
+	var _executed_callable: Callable = Callable()
+	var _time : float
+	
+	func _init(list: PackedFloat64Array, callback: Callable):
+		_list = list
+		_list.reverse()
+		_callable = callback
+		self.timeout.connect(func():
+			if not _callable.is_null():
+				_callable.call()
+			if not _executed_callable.is_null():
+				_executed_callable.call(_time)
+			self._next()
+		)
+	
+	func _enter_tree():
+		_next()
+	
+	func _next() -> void:
+		if _list.size() == 0:
+			_finished()
+			self.queue_free()
+			return
+		
+		_time = _list.pop_back()
+		if _time == 0:
+			self.timeout.emit()
+		else:
+			self.start(_time)
+	
+	# 每个时间执行结束之后，调用这个方法，这个方法需要有一个 [float] 参数接收这次结束的时间的值
+	func executed(callback: Callable) -> _IntermittentListTimer:
+		_executed_callable = callback
+		return self
+	
+	## 完全执行结束调用这个回调
+	func set_finish_callback(callback: Callable) -> _IntermittentListTimer:
+		super.set_finish_callback(callback)
+		return self
+	
+
+
+#============================================================
+#  自定义
+#============================================================
+## 执行一个片段线程
+##[br]
+##[br][code]duration[/code]  持续时间
+##[br][code]callback[/code]  每帧执行的回调方法，这个方法无需参数和返回值
+##[br][code]process_callback[/code]  线程类型：0 physics 线程 [constant Timer.TIMER_PROCESS_PHYSICS]
+##，1 普通 process 线程 [constant Timer.TIMER_PROCESS_IDLE]
+##[br][code]to_node[/code]  执行这个功能的节点依附于这个节点。建议传入这个参数，否则如果
+##callback 参数中处理的对象如果是无效的，会导致游戏闪退。
+##[br]
+##[br][code]return[/code]  返回执行对象
+static func execute_fragment_process(
+	duration: float,
+	callback: Callable,
+	process_callback : int = Timer.TIMER_PROCESS_PHYSICS,
+	to_node: Node = null
+) -> ExecutorObject:
+	var timer := ExecutorObject.new(callback, process_callback)
+	timer.wait_time = duration
+	if not is_instance_valid(to_node):
+		timer._add_to_scene()
+	else:
+		to_node.add_child(timer)
+	return timer
+
+
+##  间歇性执行
+##[br]
+##[br][code]interval[/code]  间隔执行时间
+##[br][code]count[/code]  执行次数
+##[br][code]callback[/code]  回调方法
+##[br][code]immediate_execute_first[/code]  立即执行第一个
+##[br][code]to_node[/code]  执行这个功能的节点依附于这个节点。建议传入这个参数，否则如果
+##callback 参数中处理的对象如果是无效的，会导致游戏闪退。
+##[br]
+##[br][code]return[/code]  返回执行的计时器
+static func execute_intermittent(
+	interval: float,
+	count: int,
+	callback: Callable,
+	immediate_execute_first: bool = false,
+	process_callback : int = Timer.TIMER_PROCESS_PHYSICS,
+	to_node: Node = null
+) -> _IntermittentTimer:
+	if immediate_execute_first:
+		count -= 1
+	var timer := _IntermittentTimer.new(callback, count)
+	timer.wait_time = interval
+	timer.one_shot = false
+	timer.autostart = true
+	timer.process_callback = process_callback
+	if to_node == null:
+		if callback.get_object() is Node:
+			to_node == callback.get_object()
+	timer._add_to_scene(to_node)
+	if interval > 0:
+		if immediate_execute_first:
+			timer.timeout.emit()
+	else:
+		for i in count:
+			timer.timeout.emit()
+	return timer
+
+
+##  根据传入的时间列表间歇执行
+##[br]
+##[br][code]interval_list[/code]  时间列表
+##[br][code]callback[/code]  回调方法
+##[br][code]return[/code]  返回间歇执行计时器对象
+static func execute_intermittent_by_list(
+	interval_list: PackedFloat64Array,
+	callback: Callable = Callable()
+) -> _IntermittentListTimer:
+	var timer =  _IntermittentListTimer.new(interval_list, callback)
+	timer.one_shot = true
+	timer.autostart = false
+	timer._add_to_scene()
+	return timer
+
+
+## 没别的，仅仅调用一下这个回调。
+##[br]
+##[br][code]callback[/code]  回调方法
+static func execute(callback: Callable):
+	return callback.call()
+
+## 延迟调用
+static func execute_deferred(callback: Callable):
+	callback.call_deferred()
+
+## 等待一帧执行
+static func execute_process_frame(callback: Callable):
+	Engine.get_main_loop().process_frame.connect(callback, Object.CONNECT_ONE_SHOT)
+
+static func execute_physics_frame(callback: Callable):
+	Engine.get_main_loop().physics_frame.connect(callback, Object.CONNECT_ONE_SHOT)
+
+
+## 节点在场景中时信号才连接调用一次这个 [Callable]，如果节点已经在场景中，则直接调用 [Callable] 方法
+##[br]
+##[br]- [param callback]  回调方法
+##[br]- [param _signal]  信号
+static func execute_once(callback: Callable, _signal: Signal = Signal()):
+	if _signal.is_null():
+		callback.call()
+	else:
+		_signal.connect(callback, Object.CONNECT_ONE_SHOT)
+
+
+## 如果这个节点在场景时则直接调用这个方法，否则在节点发出 [signal Node.tree_entered] 信号后调用这个方法。
+## 如果 callable 方法是 [Node] 类型节点下的方法则可以不用传入 node 参数，会自动获取这个 [Callable]
+## 方法的实际对象，否则需要传入 node 参数值
+static func on_enter_tree(callback: Callable, node: Node = null):
+	if node == null:
+		assert(callback.get_object() is Node, "node 参数为 null 时，callable 方法源对象必须是 Node 类型")
+		node = callback.get_object()
+	
+	if node.is_inside_tree():
+		callback.call()
+	else:
+		if node.tree_entered.is_connected(callback):
+			return 0
+		node.tree_entered.connect(callback, Object.CONNECT_ONE_SHOT)
+	return OK
+
+## 如果这个节点在场景时则直接调用这个方法，否则在节点发出 [signal Node.tree_exiting] 信号后调用这个方法。
+static func on_exit_tree(callback: Callable, node: Node = null) -> Error:
+	if node == null:
+		assert(callback.get_object() is Node, "node 参数为 null 时，callable 方法源对象必须是 Node 类型")
+		node = callback.get_object()
+	
+	if not node.is_inside_tree():
+		callback.call()
+	else:
+		if node.tree_exiting.is_connected(callback):
+			return FAILED
+		node.tree_exiting.connect(callback, Object.CONNECT_ONE_SHOT)
+	return OK
+
+## 如果这个节点在场景时则直接调用这个方法，否则在节点发出 [signal Node.ready] 信号后调用这个方法。
+## 如果 callable 方法是 [Node] 类型节点下的方法则可以不用传入 node 参数，会自动获取这个 [Callable]
+## 方法的实际对象，否则需要传入 node 参数值
+static func on_ready(callback: Callable, node: Node = null) -> Error:
+	if node == null:
+		assert(callback.get_object() is Node, "node 参数为 null 时，callable 方法源对象必须是 Node 类型")
+		node = callback.get_object()
+	if node.is_inside_tree():
+		callback.call()
+	else:
+		if node.ready.is_connected(callback):
+			return FAILED
+		node.ready.connect(callback, Object.CONNECT_ONE_SHOT)
+	return OK
+
+
+##  自动注入属性，在节点发出 tree_entered 信号之后开始注入属性
+##[br]
+##[br][code]root[/code]  设置的根节点
+##[br][code]by_name[/code]  根据节点名注入属性
+##[br][code]by_class[/code]  根据节点的类注入属性
+##[br][code]all_child[/code]  扫描所有节点，如果为false则仅扫描当前子节点
+static func auto_inject(
+	root: Node,
+	by_name: bool = true,
+	by_class: bool = false,
+	all_child: bool = true,
+) -> Error:
+	if not is_instance_valid(root):
+		printerr("[ FuncUtil ] auto_inject: ", root, '是个无效的对象')
+		return FAILED
+	
+	var callback = func():
+		var prop_list : Array = []
+		if by_class:
+			for data in ScriptUtil.get_property_data_list(root.get_script()):
+				if (data['type'] == TYPE_OBJECT
+					and data['usage'] & PROPERTY_USAGE_SCRIPT_VARIABLE == PROPERTY_USAGE_SCRIPT_VARIABLE
+				):
+					prop_list.append(data['name'])
+		
+		var nodes = NodeUtil.get_all_child(root) \
+			if all_child \
+			else root.get_children()
+		for child in nodes:
+			if by_name:
+				var property = child.name
+				if property in root and root[property] == null:
+					root[property] = child
+			
+			if by_class:
+				var property : String
+				for i in range(prop_list.size()-1, -1, -1):
+					property = prop_list[i]
+					if root[property] == null:
+						root[property] = child
+					# 如果赋值功，则移除掉
+					if root[property]:
+						prop_list.remove_at(i)
+	
+	if root.is_inside_tree():
+		callback.call()
+	else:
+		root.tree_entered.connect(callback)
+	
+	return OK
+
+
+## 根据节点路径注入节点
+##[br]
+##[br][code]node[/code]  设置属性的节点
+##[br][code]property_to_node_path_map[/code]  属性对应的要获取的节点的路径。key 为属性，
+##value 为节点路径
+##[br][code]get_path_to_node[/code]  根据这个节点获取这个路径节点，如果为 [code]null[/code]，
+##则默认为当前方法的 node 参数的值
+##[br][code]set_node_callable[/code]  如何获取设置节点的方法，这个方法需要有两个参数，第一个参数为
+##[String] 类型接收属性名，第二个为 [NodePath] 类型，用于接收节点路径，返回一个 [Node] 类型的数据
+static func inject_by_path_map(
+	node: Node,
+	property_to_node_path_map: Dictionary,
+	get_path_to_node: Node = null
+):
+	if get_path_to_node == null:
+		get_path_to_node = node
+	
+	on_enter_tree(func():
+		var node_path : NodePath
+		for prop in property_to_node_path_map:
+			node_path = property_to_node_path_map[prop]
+			# 获取节点设置属性
+			node[prop] = get_path_to_node.get_node_or_null(node_path)
+	, node)
+
+
+##  根据节点路径设置属性。获取到的节点会赋值给对应节点名的变量
+##[br]
+##[br][code]node[/code]  设置属性的节点
+##[br][code]node_path_list[/code]  节点路径列表，如果有这个节点名称的属性，则进行设置
+##[br][code]get_path_to_node[/code]  根据这个节点获取这个路径的节点，如果为 null，则默认为
+##target_node 参数值
+static func inject_by_path_list(
+	target_node: Node,
+	node_path_list: PackedStringArray,
+	get_path_to_node: Node = null
+):
+	on_enter_tree(func():
+		var prop_to_node_path_map := {}
+		var prop : String
+		for node_path in node_path_list:
+			prop = str(node_path).get_file().replace("%", "")
+			if prop in target_node:
+				prop_to_node_path_map[prop] = node_path
+			else:
+				printerr(target_node, " 节点中没有这个属性：", prop)
+		inject_by_path_map(target_node, prop_to_node_path_map, get_path_to_node)
+	, target_node)
+
+
+##  场景唯一节点名对应属性名
+##[br]
+##[br][code]node[/code]  设置属性的节点
+##[br][code]prefix[/code]  属性前缀。如果为空字符串，则默认筛选注入全部 Object 类型属性
+static func inject_by_unique(
+	node: Node,
+	prefix: String = "",
+	get_path_to_node: Node = null
+):
+	on_enter_tree(func():
+		# 获取这个前缀的属性名
+		var property_list = (node.get_property_list()
+			.filter(func(data): return \
+				data['type'] == TYPE_OBJECT \
+				and data['usage'] == PROPERTY_USAGE_SCRIPT_VARIABLE \
+				and ( prefix == "" or data['name'].begins_with(prefix))
+			,)
+			.map(func(data): return data['name'] )
+		)
+		var prop_to_node_path_map = {}
+		for prop in property_list:
+			prop_to_node_path_map[prop] = "%" + prop.trim_prefix(prefix)
+		if get_path_to_node == null:
+			get_path_to_node = node
+		var node_path
+		for property in prop_to_node_path_map:
+			node_path = prop_to_node_path_map[property]
+			if not node[property]:
+				node[property] = get_path_to_node.get_node_or_null(node_path)
+	, node)
+
+##  遍历列表
+##[br]
+##[br][code]list[/code]  [Array]数据
+##[br][code]callback[/code]  回调方法，这个方法需要有个参数：
+##[br] - item [Variant] 类型参数，用于接收这个索引的列表项的值
+##[br] - idx  [int] 类型参数，用于接收索引
+##[br][code]step[/code]  间隔步长，如果超过0则正序行，如果低于0则倒序执行
+##[br] 比如扫描当前对象脚本下的所有 gd 文件
+##[codeblock]
+##var dir = ScriptUtil.get_object_script_path(self).get_base_dir()
+##var files = FileUtil.scan_file(dir)
+##FuncUtil.foreach(files, func(file: String, idx: int):
+##    if file.get_extension() == "gd":
+##        print(file, "\t", file.get_file())
+##)
+##[/codeblock]
+static func for_list(list: Array, callback: Callable, step: int = 1) -> void:
+	if step > 0:
+		for i in range(0, list.size(), step):
+			callback.call(list[i], i)
+	elif step < 0:
+		for i in range(list.size()-1, -1, step):
+			callback.call(list[i], i)
+	else:
+		assert(false, "错误的 step 参数值，值不能为 0！")
+
+## 循环遍历执行
+##[br]
+##[br][code]iterator[/code]  可迭代的数据
+##[br][code]callback[/code]  回调方法。这个方法需要有一个参数，用于接收迭代的数据
+##[br]
+##[br]示例。清除列表中的节点：
+##[codeblock]
+##FuncUtil.for_each(node_list, NodeUtil.queue_free)
+##[/codeblock]
+static func for_each(iterator, callback: Callable):
+	if iterator is Dictionary:
+		iterator = iterator.keys()
+	for item in iterator:
+		callback.call(item)
+
+
+static func for_range(begin: int, end: int, method: Callable = Callable()) -> void:
+	var step : int = signi(end - begin)
+	for i:int in range(begin, end + step, step):
+		method.call(i)
+
+
+##  遍历字典。使用这个方法的好处是 callback 里的参数可以设置类型，参数有代码提示
+##[br]
+##[br][code]dict[/code]  字典数据
+##[br][code]callback[/code]  回调方法。这个方法需要有两个参数，一个 key，一个 value
+static func for_dict(dict: Dictionary, callback: Callable):
+	for key in dict:
+		callback.call( key, dict[key] )
+
+##  遍历向量。从开始到结束位置
+##[br]
+##[br][code]from[/code]  起始点
+##[br][code]to[/code]  结束点
+static func for_vector2(from: Vector2, to: Vector2, callback: Callable):
+##[br][code]callback[/code]  回调方法
+	var direction = from.direction_to(to)
+	callback.call(from)
+	for i in from.distance_to(to):
+		from += direction
+		callback.call(from)
+
+## 遍历 rect。[code]callback[/code] 回调方法需要有一个 [Vector2] 类型的参数的回调。
+##[br]
+##[br][b]注意：[/b]这是以 [x, y] 的范围进行遍历，而不是 [x, y)，是包含最后的 y 的
+static func for_rect(rect: Rect2, callback: Callable) -> void:
+	for y in range(rect.position.y, rect.end.y + 1):
+		for x in range(rect.position.x, rect.end.x + 1):
+			callback.call(Vector2(x, y))
+
+static var _rect_points_cache: Dictionary = {}
+static func get_rect_points(rect: Rect2) -> Array[Vector2]:
+	if _rect_points_cache.has(rect):
+		return _rect_points_cache[rect]
+	var points : Array[Vector2] = []
+	for y in range(rect.position.y, rect.end.y + 1):
+		for x in range(rect.position.x, rect.end.x + 1):
+			points.append(Vector2(x, y))
+	_rect_points_cache[rect] = points
+	points.make_read_only()
+	return points
+
+## 回调方法中要有一个参数接收一个 [float] 类型的 x 值
+static func for_rect_x(rect: Rect2, callback: Callable) -> void:
+	for x in range(rect.position.x, rect.end.x + 1):
+		callback.call(x)
+
+## 回调方法中要有一个参数接收一个 [float] 类型的 y 值
+static func for_rect_y(rect: Rect2, callback: Callable) -> void:
+	for y in range(rect.position.y, rect.end.y + 1):
+		callback.call(y)
+
+
+##  遍历 rect 四周。一般用于将地图四周围起来。要注意传入的值带小数点
+##[br]
+##[br][code]rect[/code]  矩形值
+##[br][code]callback[/code]  回调方法，这个方法需要有一个 [Vector2] 类型的参数接收回调，
+## 如果需要的是 [Vector2] 类型，则将参数指定为 Vector2 类型即可
+static func for_rect_around(rect: Rect2, callback: Callable):
+	var rect_range_dir : Array = [
+		[rect.position.x, rect.end.x, Vector2.RIGHT],	# 从左到右
+		[rect.position.y, rect.end.y, Vector2.DOWN],	# 从上到下
+		[rect.end.x, rect.position.x, Vector2.LEFT],	# 从右到左
+		[rect.end.y, rect.position.y, Vector2.UP],	# 从下到上
+	]
+	const Index = {
+		START = 0, # 轴的开始值
+		END = 1, # 轴的结束值
+		DIRECTION = 2, # 向量的步长增量值
+	}
+	var coords : Vector2 = rect.position
+	var from
+	var to
+	var dir: Vector2
+	for list in rect_range_dir:
+		from = list[Index.START]
+		to = list[Index.END]
+		dir = list[Index.DIRECTION]
+		for i in abs(to - from):
+			callback.call(coords)
+			coords += dir
+
+static func get_rect_around(rect: Rect2, include_right_down: bool = true) -> Array:
+	var rect_range_dir : Array = [
+		[rect.position.x, rect.end.x - (0 if include_right_down else 1), Vector2.RIGHT],	# 从左到右
+		[rect.position.y, rect.end.y - (0 if include_right_down else 1), Vector2.DOWN],	# 从上到下
+		[rect.end.x - (0 if include_right_down else 1), rect.position.x, Vector2.LEFT],	# 从右到左
+		[rect.end.y - (0 if include_right_down else 1), rect.position.y, Vector2.UP],	# 从下到上
+	]
+	const Index = {
+		START = 0, # 轴的开始值
+		END = 1, # 轴的结束值
+		DIRECTION = 2, # 向量的步长增量值
+	}
+	var coords : Vector2 = rect.position
+	var from
+	var to
+	var dir: Vector2
+	var points: Array
+	for list in rect_range_dir:
+		from = list[Index.START]
+		to = list[Index.END]
+		dir = list[Index.DIRECTION]
+		for i in abs(to - from):
+			points.append(coords)
+			coords += dir
+	return points
+
+## 圆形遍历。这个回调方法需要有个 [Vector2] 类型的参数
+##[br]
+##[br]- [param include_radius] 包括最大长度 [code]radius[/code] 那一格的位置
+static func for_circle(radius: float, callback: Callable, include_radius: bool = true):
+	var rect = Rect2().grow(radius)
+	var center = rect.get_center()
+	var raidus_squared = pow(radius, 2)
+	if include_radius:
+		for_rect(rect, func(v: Vector2):
+			if v.distance_squared_to(center) <= raidus_squared:
+				callback.call(v)
+		)
+	else:
+		for_rect(rect, func(v: Vector2):
+			if v.distance_squared_to(center) < raidus_squared:
+				callback.call(v)
+		)
+
+## 迭代轮廓边缘
+static func for_circle_around(radius: float, callback: Callable):
+	var points = get_circle_outline_tiles(radius)
+	for p in points:
+		callback.call(p)
+
+
+static var _circle_outline_cache: Dictionary = {}
+## 圆形轮廓（边缘一圈）
+static func get_circle_outline(radius:int) -> Array[Vector2]:
+	if _circle_outline_cache.has(radius):
+		return _circle_outline_cache[radius]
+	var points : Array[Vector2] = []
+	var r = radius
+	for x in range(-r, r+1):
+		for y in range(-r, r+1):
+			var d = sqrt(x*x + y*y)
+			if d >= r - 0.5 and d < r + 0.5:
+				points.append(Vector2(x, y))
+	_circle_outline_cache[radius] = points
+	points.make_read_only()
+	return points
+
+
+static var _circle_solid_cache: Dictionary = {}
+## 实心圆
+static func get_circle_solid(radius:int) -> Array[Vector2]:
+	if _circle_solid_cache.has(radius):
+		return _circle_solid_cache[radius]
+	else:
+		var points : Array[Vector2] = []
+		var r = radius
+		for x in range(-r, r+1):
+			for y in range(-r, r+1):
+				var d = sqrt(x*x + y*y)
+				if d < r + 0.5:
+					points.append(Vector2(x, y))
+		_circle_solid_cache[radius] = points
+		points.make_read_only()
+		return points
+
+## 圆环（轮廓宽度 = outer - inner）
+static func get_circle_ring(outer_radius:int, inner_radius:int) -> Array[Vector2]:
+	var points : Array[Vector2] = []
+	var r1 = inner_radius
+	var r2 = outer_radius
+	for x in range(-r2, r2+1):
+		for y in range(-r2, r2+1):
+			var d = sqrt(x*x + y*y)
+			if d >= r1 + 0.5 and d < r2 + 0.5:
+				points.append(Vector2(x, y))
+	return points
+
+static var _get_circle_outline_tiles_cache: Dictionary = {}
+# 生成圆形边缘一圈的1x1网格点 (Vector2(1,1)网格)
+# radius: 圆形半径
+# callback: 遍历到每个边缘点时调用的回调函数
+# include_radius: 是否包含半径边界点（默认开启）
+# 生成完美圆形轮廓瓦片点（保证上下左右四个端点必存在）
+# radius: 整数半径（推荐 5/10/15 这种整数）
+static func get_circle_outline_tiles(radius: int) -> Array[Vector2]:
+	if _get_circle_outline_tiles_cache.has(radius):
+		return _get_circle_outline_tiles_cache[radius]
+	var points : Array[Vector2] = []
+	var r = radius
+
+	# 8向对称法生成圆形轮廓，绝对不会丢失上下左右顶点
+	for x in range(-r, r + 1):
+		for y in range(-r, r + 1):
+			# 计算到圆心距离
+			var dist = sqrt(x*x + y*y)
+			
+			# 严格匹配轮廓：距离 ≈ 半径（允许微小误差）
+			if dist >= r - 0.5 && dist < r + 0.5:
+				points.append(Vector2(x, y))
+	_get_circle_outline_tiles_cache[radius] = points
+	return points
+
+
+# FIXME 这个方法名待修改
+## 递归处理对象。要确保有归出的条件，返回否值进行归出，比如 [code]null, false, [], {}[/code]，
+##不返回值默认为 null 只遍历一层就结束。
+##[br]
+##[br][code]start_target[/code]  递归的对象或对象列表。从这个对象开始循环
+##[br][code]callback[/code]  这个方法用于接收要递归的对象，并返回下一个要递归的对象或数组。
+##[br]
+##[br]示例，遍历所有子节点：
+##[codeblock]
+##var list : Array = []
+##FuncUtil.recursion(self, func(node):
+##    list.append(node)
+##    return node.get_children()
+##)
+##print(list)
+##[/codeblock]
+static func recursion(start_target, callback: Callable) -> void:
+	var last = (start_target if start_target is Array else [start_target] )
+	while true:
+		var next_list = []
+		if last:
+			for i in last:
+				var items = callback.call(i)
+				if items:
+					if items is Array:
+						next_list.append_array(items)
+					else:
+						next_list.append(items)
+			last = next_list
+		else:
+			break
+
+
+## 合并字典。深度进行合并，里面所有有关字典的数据都可以被合并
+##[br]
+##[br][code]from[/code]  数据来源
+##[br][code]to[/code]  合并数据到这个字典上
+##[br][code]callback[/code]  用于合并的方法。这个方法需要有以下几个参数：
+##[br]  * from_parent 参数为 from 中嵌套的 key 的父级值
+##[br]  * to_parent 参数为 to 中嵌套的 key 的父级值
+##[br]  * key 为递归遍历的 from 数据中的每个 key 键
+##[br]  * from_value 为递归遍历的 from 数据中的每个 key 的值
+##[br]  * to_value 参数为 to_parent （父级字典数据）下的 key 键的数据
+##[br]
+##[br]比如将字典 from 合并到字典 to 中：
+##[codeblock]
+##FuncUtil.merge_dict(from, to, func(from_parent: Dictionary, to_parent: Dictionary, key, from_value, to_value):
+##    # 如果存在这个 key 的数据
+##    if to_parent.has(key):
+##        if to_parent[key] is Dictionary and from_value is Dictionary:
+##            # 如果存在的数据是个字典，则进行合并
+##            to_parent[key].merge(from_value)
+##        else:
+##            # 其他情况不合并（原因：to_parent 字典中已经有值这里就不想再给他替换了）
+##            pass
+##    else:
+##        # 没有这个数据则直接添加
+##        to_parent[key] = from_value
+##)
+##[/codeblock]
+static func merge_dict(from: Dictionary, to: Dictionary, callback: Callable) -> void:
+	var call = [null] # 匿名函数在使用面的数据的时候，需要是引用类型的，所以要用数组或字典
+	
+	call[0] = func(from_parent: Dictionary, to_parent: Dictionary, key, from_value, to_value, ):
+		callback.call(from_parent, to_parent, key, from_value, to_value, )
+		if from_value is Dictionary:
+			for from_child_key in from_value:
+				call[0].call(
+					from_value,
+					to_value,
+					from_child_key,
+					from_value[from_child_key],
+					to_value.get(from_child_key) #if to_value is Dictionary else null,
+				)
+	
+	for key in from:
+		call[0].call(
+			from,
+			to,
+			key,
+			from[key],
+			to.get(key) #if to is Dictionary else null,
+		)
+
+
+## 监听执行
+##[br]
+##[br][code]condition[/code]  执行结束条件方法
+##[br][code]execute_callback[/code]  执行功能
+##[br][code]finish_callable[/code]  执行结束时的回调
+static func monitor(condition: Callable, execute_callback: Callable, finish_callable: Callable = Callable()):
+	execute_fragment_process(INF, execute_callback ) \
+	.set_finish_condition(condition) \
+	.set_finish_callback(
+		func():
+			if finish_callable.is_valid():
+				finish_callable.call()
+	)
+
+
+### 施加力
+###[br]
+###[br][code]init_vector[/code]  初始移动速度
+###[br][code]attenuation[/code]  衰减速度
+###[br][code]motion_callable[/code]  控制运动的回调。这个方法需要接收一个 [FuncApplyForceState] 类型的数据，
+###利用里面的数据控制节点
+###[br][code]target[/code]  执行功能的节点的依赖目标，如果这个目标死亡，则执行结束
+###[br][code]duration[/code]  持续时间
+#static func apply_force(init_vector: Vector2, attenuation: float, motion_callable: Callable, target: Node2D = null, duration : float = INF):
+	#var state := FuncApplyForceState.new()
+	#state.speed = init_vector.length()
+	#state.update_velocity(init_vector)
+	#state.attenuation = attenuation
+	#
+	## 控制运动
+	#var timer = DataUtil.get_ref_data(null)
+	#timer.value = execute_fragment_process(duration, func():
+		#if attenuation > 0:
+			#state.speed = state.speed - attenuation
+		#if (
+			#state.finish
+			#or state.speed <= 0 
+			#or (target != null and not is_instance_valid(target))
+		#):
+			#timer.value.queue_free()
+			#return
+		#
+		## 运动回调
+		#motion_callable.call(state)
+		#
+	#, Timer.TIMER_PROCESS_PHYSICS, target)
+
+
+##  曲线缓动。按照曲线上的 y 值设置对应属性
+##[br]
+##[br][code]curve[/code]  曲线资源对象
+##[br][code]object[/code]  修改性的对象
+##[br][code]property_path[/code]  属性路径
+##[br][code]duration[/code]  持续时间
+##[br][code]scale[/code]  属性缩放值
+static func tween_curve(
+	curve: Curve,
+	object: Object,
+	property_path: NodePath,
+	duration: float,
+	scale: float = 1,
+):
+	const TIME = 0
+	const SCENE = 1
+	var proxy = [0.0, Engine.get_main_loop().current_scene]
+	execute_fragment_process(duration,
+		func():
+			var ratio : float = proxy[TIME] / duration
+			object.set_indexed(property_path, curve.sample_baked(ratio) * scale)
+			proxy[TIME] += proxy[SCENE].get_process_delta_time()
+	, Timer.TIMER_PROCESS_IDLE
+	, object if object is Node else Engine.get_main_loop().current_scene
+	).set_finish_callback(func(): 
+		object.set_indexed(property_path, curve.sample_baked(1) * scale)
+	)
+
+
+## 执行 Curve 曲线的比值的 tween
+##[br]
+##[br][code]curve[/code]  曲线资源对象。一般是创建一个 [Curve] 文件或使用对象的 [Curve] 类型的属性的值作为参数值
+##[br][code]object[/code]  控制对象
+##[br][code]property_path[/code]  控制属性
+##[br][code]final_val[/code]  执行完到达的最终值
+##[br][code]duration[/code]  执行时间
+##[br][code]reverse[/code]  颠倒获取曲线值
+##[br][code]init_val[/code]  初始值。一般 reverse 参数为 [code]true[/code] 时都要设置这个值
+static func execute_curve_tween(
+	curve: Curve, 
+	object: Object, 
+	property_path: NodePath, 
+	final_val: Variant, 
+	duration: float, 
+	reverse: bool = false, 
+	init_val = null 
+): 
+	# 初始值
+	if init_val == null:
+		init_val = object.get_indexed(property_path)
+	if reverse:
+		var tmp = init_val
+		init_val = final_val
+		final_val = tmp
+	
+	# 开始播放
+	const TIME = 0
+	const SCENE = 1
+	var proxy = [0.0, Engine.get_main_loop().current_scene]
+	object.set_indexed(property_path, init_val)
+	execute_fragment_process(duration, 
+		func():
+			proxy[TIME] += proxy[SCENE].get_process_delta_time()
+			var ratio : float = proxy[TIME] / duration
+			object.set_indexed(property_path, lerp(init_val, final_val, curve.sample_baked(ratio)))
+			, 
+		Timer.TIMER_PROCESS_IDLE, 
+		object if object is Node else Engine.get_main_loop().current_scene,
+	).set_finish_callback(func(): 
+		object.set_indexed(property_path, lerp(init_val, final_val, curve.sample_baked(1)))
+	)
+
+
+##  路径移动（广度优先搜索）。一般用于搜索路径，比如用在 [TileMap] 从一个坐标开始搜索周围没有瓦片的所有坐标
+##[br]
+##[br]- [param start]  开始移动的位置。这个位置不会传入到 [params next_condition] 参数方法的回调中
+##[br]- [param directions]  可移动的方向列表
+##[br]- [param next_condition]  是否可移动到下一个位置的条件。这个方法需要有一个 [Vector2]
+##类型的参数接收判断是否可以移动到这个位置，并返回一个 [bool] 值，如果返回 [code]true[/code] 则下一层时会移动到这个位置
+##[br]- [param ready_next_callback]  开始下一层遍历前会调用这个方法，需要一个 [Vector2] 类型的 [Array] 参数接收开始下一层的坐标列表。
+##[br]- [param end_condition]  停止结束的条件。这个方法接受本轮循环结束时的点列表
+##[br]- [code]return[/code]  返回已经过的点的列表
+##[br]
+##[br]示例。查找 [TileMapLayer] 中没有瓦片的所有坐标：
+##[codeblock]
+##var map_rect : Rect2i = tilemap.get_used_rect().grow(1)
+##var coords_list = []
+##FuncUtil.path_move(
+##    map_rect.position, 
+##    [Vector2i.LEFT, Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN],
+##    func(next_point): 
+##        return (map_rect.has_point(Vector2i(next_point)) 
+##            and tilemap.get_cell_source_id(next_point) == -1
+##        ),
+##    func(next_points):
+##        coords_list.append_array(next_points)
+##)
+##print(coords_list)
+##[/codeblock]
+static func path_move(
+	start, 
+	directions: Array, 
+	next_condition: Callable,
+	ready_next_callback: Callable = Callable(),
+	end_condition: Callable = Callable(),
+	enabled_process_wait: bool = false,
+) -> Array:
+	var last : Array = [start]
+	if ready_next_callback.is_valid():
+		ready_next_callback.call(last)
+	var pass_points : Dictionary = {
+		start: null,
+	}
+	var visited : Dictionary = {}
+	var next_pos
+	var condition_result: bool
+	var idx : int = 0
+	var start_time = Time.get_ticks_msec()
+	while true:
+		idx += 1
+		var next_points := {}
+		for coord in last:
+			visited[coord] = null
+			for direction in directions:
+				next_pos = coord + direction
+				condition_result = next_condition.call(next_pos)
+				if (not visited.has(next_pos) 
+					and condition_result
+				):
+					next_points[next_pos] = null
+					pass_points[next_pos] = null
+				
+			if enabled_process_wait and Time.get_ticks_msec() - start_time > 10:
+				await Engine.get_main_loop().process_frame
+				start_time = Time.get_ticks_msec()
+		
+		if end_condition.is_valid() and end_condition.call(last):
+			break
+		
+		last = next_points.keys()
+		if last.size() == 0:
+			break
+		if ready_next_callback.is_valid():
+			ready_next_callback.call(last)
+	
+	return pass_points.keys()
+
+
+## 二值排序
+##[br]
+##[br][code]list[/code]  排序的列表
+##[br][code]sort_method[/code]  排序方法回调。这个方法需要有一个参数，接收列表中的每个项，
+##并返回 [bool] 类型的值。
+##如果返回 [code]true[/code]，则排在前面；
+##如果返回 [code]false[/code]，则排在后面。
+##[br][code]return[/code]  返回原来的但已经排序后的列表
+##[br]
+##[br][b]一般用在数据是否为空的排序，有数据的排在前面，空数据的排在后面[/b]
+static func sort_binary(list: Array, sort_method: Callable) -> Array:
+	var a_list : Array = []
+	var b_list : Array = []
+	for item in list:
+		if sort_method.call(item):
+			a_list.append(item)
+		else:
+			b_list.append(item)
+	list.clear()
+	list.append_array(a_list)
+	list.append_array(b_list)
+	return list
+
+
+## 桶排序
+##[br]
+##[br][code]list[/code]  排序列表
+##[br][code]sort_method[/code] 排序方法。这个方法需要有一个参数接收每个项，并返回一个 [int]
+##类型的值，用于设置这个值所在的序号组。
+##[br][code]return[/code]  返回原来的但已经排序后的原来的列表
+##[br]
+##[br][b]一般用与对某种类型的数据进行排序。[/b]
+##[br]
+##[br]比如对物品类型的排序，示例：
+##[codeblock]
+##FuncUtil.sort_barrel(item_data_list, func(item_data):
+##    if item_data.type == GoodsType.CONSUMABLE:   # 消耗类物品放在第1位
+##        return 1
+##    elif item_data.type == GoodsType.WEAPON:     # 武器类放在第2位
+##        return 2
+##    elif item_data.type == GoodsType.DECORATIVE: # 饰品类放在第3位
+##        return 3
+##    else:
+##         return INF
+##)
+##[/codeblock]
+##[br]一般情况下物品类型都是枚举值的话，只用直接根据枚举值设置顺序：
+##[codeblock]
+##FuncUtil.sort_barrel(item_data_list, func(item_data): return item_data.type)
+##[/codeblock]
+static func sort_barrel(list: Array, sort_method: Callable) -> Array:
+	# 桶排序
+	var dict : Dictionary = {}
+	var index : float = 0
+	for item in list:
+		index = sort_method.call(item)
+		if not dict.has(index):
+			dict[index] = []
+		dict[index].append(item)
+	
+	# 按序号顺序添加
+	list.clear()
+	var indexs = dict.keys()
+	indexs.sort()
+	for idx in indexs:
+		for item_list in dict[idx]:
+			list.append_array(item_list)
+	return list
+
+
+## 值组合
+##[br]
+##[br]对列表中的值进行排列组合。返回所有组合的结果
+static func combination(items: Array) -> Array[Array]:
+	assert(items.size() <= 1000, "组合的值不能太多")
+	
+	# 执行方法
+	var result : Array[Array] = []
+	var callback : Array = []
+	callback.append(func(tmp: Array, from: int, max_idx: int):
+		tmp.append(from)
+		result.append(tmp.map(func(item_index): return items[item_index] ))
+		
+		from += 1
+		for i in range(from, max_idx):
+			callback[0].call(tmp.duplicate(), i, max_idx)
+		
+		tmp.pop_front()
+		result.append(tmp.map(func(item_index): return items[item_index] ))
+		
+	)
+	
+	# 递归执行
+	callback[0].call([], 0, items.size())
+	return result
+
+
+##  过滤为单个。去掉重复对象
+##[br]
+##[br][code]list[/code]  列表
+##[br][code]return[/code]  返回列表
+static func filter_of_single(list: Array) -> Array:
+	var dict : Dictionary = {}
+	for item in list:
+		dict[item] = null
+	if list.is_typed():
+		return Array(dict.keys(), list.get_typed_builtin(), list.get_typed_class_name(), list.get_typed_script())
+	else:
+		return dict.keys()
+
+
+## 处理 item。对多个单个对象进行批处理调用另一个方法时使用。
+##[br]
+##[br]比如将每个项添加到节点上，则可以
+##[codeblock]
+##var nodes : Array[Node]  # 节点列表数据
+##var root : Node = Engine.get_main_loop().current_scene
+##FuncUtil.forexec(nodes, FuncUtil.to_item.bind(root, "add_child"))
+##[/codeblock]
+##将每个对象添加到列表中
+##[codeblock]
+##var items : Array  # 其他地方的 Item 列表
+##var list : Array = []
+##FuncUtil.forexec(items, FuncUtil.to_item.bind(list, "append"))
+##[/codeblock]
+static func to_item(item, to, method: String):
+	if to is Object:
+		to.call(method, item)
+	else:
+		var meta_key : StringName = StringName("FuncUtil_to_inst_%s" % typeof(to))
+		var inst
+		if Engine.has_meta(meta_key):
+			inst = Engine.get_meta(meta_key)
+		else:
+			var script = GDScript.new()
+			script.source_code = """extends Object
+
+var to
+
+func execute(item):
+	to.{method}(item)
+
+""".format({
+	"method": method,
+})
+			script.reload()
+			inst = script.new()
+			Engine.set_meta(meta_key, inst)
+		
+		inst.to = to
+		inst.execute(item)
+
+
+## 一次性计时器结束调用回调方法
+static func timeout(time: float, callback: Callable = Callable()) -> Signal:
+	var timeout_signal = Engine.get_main_loop().create_timer(time).timeout
+	if not callback.is_null():
+		timeout_signal.connect(callback)
+	return timeout_signal
+
+## 这两个线程都在所有 Node 的线程之前发出
+static func physics_frame(callable: Callable = Callable(), flags: int = 0) -> Signal:
+	if callable.is_valid():
+		Engine.get_main_loop().physics_frame.connect(callable, flags)
+	return Engine.get_main_loop().physics_frame
+
+static func process_frame(callable: Callable = Callable(), flags: int = 0) -> Dictionary:
+	if callable.is_valid():
+		Engine.get_main_loop().process_frame.connect(callable, flags)
+	return {
+		"signal": Engine.get_main_loop().process_frame,
+		"method": callable,
+	}
+
+
+##  过滤数据
+##[br]
+##[br][code]data[/code]  要过滤的数据。仅支持 [Array, Dictionary, String] 类型
+##[br][code]method[/code]  过滤方法。需要有一个参数接收每个项。这个回调
+##方法需要返回一个 [bool] 值用以判断是否过滤，如果返回 [code]true[/code] 则不过滤，否则过滤
+##[br]
+##[br][b]注意：[/b]如果类型为 [Dictionary] 时，这个回调方法的参数类型为 [Dictionary]，格式如下
+##[codeblock]
+##{"key": 键, "value": 值}
+##[/codeblock]
+##[br][code]return[/code] 返回过滤后的数据
+static func filter(data, method: Callable):
+	if data is Dictionary:
+		var dict : Dictionary = {}
+		for key in data:
+			if method.call({
+				"key": key,
+				"value": data[key],
+			}):
+				dict[key] = data[key]
+		return dict
+	else:
+		var new_data
+		if data is Array:
+			new_data = []
+		elif data is String:
+			new_data = ""
+		else:
+			assert(false, "不支持的数据类型")
+		for i in data:
+			if method.call(i):
+				new_data += i
+		return new_data
+
+
+## 找到一个符合条件的值
+##[br]
+##[br][code]list[/code]  数据列表
+##[br][code]callback[/code]  过滤方法。这个方法需要有一个参数，用于接收并判断列表中的每个项，
+##并返回一个值进行返回符合条件的数据
+##[br][code]default[/code]  没有找到数据时默认返回的值
+static func find_first(list: Array, callback: Callable, default = null):
+	for item in list:
+		if callback.call(item):
+			return item
+	return default
+
+
+## 生成网格点
+static func generate_grid_point(
+	rect: Rect2,  ## 生成在这个矩形范围内的点
+	space: Vector2 = Vector2.ONE,  ## 点之间的空间范围，间距大小
+	offset: Vector2 = Vector2.ZERO ## 左上角偏移位置
+) -> Array[Vector2]:
+	var id := StringName(str(hash([rect, space, offset])))
+#	print_debug("[ generate_grid_point ] 生成网格点, id = ", [ id ])
+	return DataUtil.singleton("FuncUtil_generate_grid_point_%s" % id, func():
+		var point : Vector2 = Vector2.ZERO
+		# 开始生成
+		var list : Array[Vector2] = []
+		rect.size /= space
+		for_rect(rect, func(point):
+			list.append(point * space + offset)
+		)
+		return list
+	)
+
+class _FuncUtil_Move:
+	extends Node
+	
+	var method : Callable
+	var velocity
+	
+	func _physics_process(delta):
+		if is_instance_valid(method.get_object()):
+			method.call(velocity)
+		else:
+			queue_free()
+
+## 创建一个移动节点控制节点的移动，并返回由此创建的代理控制的节点
+static func move(
+	velocity, 
+	move_method: Callable, 
+	host: Node = null
+) -> _FuncUtil_Move:
+	if not is_instance_valid(host):
+		var object = move_method.get_object()
+		if object is Node:
+			host = object
+		else:
+			host = Engine.get_main_loop().current_scene
+	var move_node = _FuncUtil_Move.new()
+	move_node.method = move_method
+	move_node.velocity = velocity
+	host.add_child(move_node)
+	return move_node
+
+
+## 重复调用方法
+static func repeat_call(number: int, callback: Callable):
+	for i in number:
+		callback.call()
+
+
+## 停止计时器计时
+static func stop_timer(timer: Object):
+	if timer is Timer:
+		timer.stop()
+	elif timer is SceneTreeTimer:
+		Engine.get_main_loop().queue_delete(timer)
+
+
+## 获取最短路径
+static func get_closest_path(
+	from: Vector2, 
+	to: Vector2,
+	directions : PackedVector2Array, ## 周围可移动的方向
+	next_condition: Callable, ## 下一次可移动到的点的所需条件方法，这个方法需要有一个 [Vector2] 参数接收下次要移动到的点，如果可以到达则返回 [code]true[/code]
+	end_condition : Callable, ## 终止条件，返回true则执行结束。需要有两个参数，一个[Vector2] 参数接收当前符合 next方法 条件的最近的点，一个 [Array] 参数接收当前周围的点
+) -> Array:
+	var paths = [from]
+	var curr : Vector2 = from
+	var visited = {}
+	while true:
+		var list = []
+		var tmp
+		for dir in directions:
+			tmp = curr + dir
+			if next_condition.call(tmp) and not visited.has(tmp):
+				list.append(tmp)
+		if list.is_empty():
+			if paths.is_empty():
+				return []
+			curr = paths.pop_back() # 已到死胡同回退到上一步
+			continue
+		curr = list[MathUtil.get_closest_point_idx(to, list)]
+		visited[curr] = null
+		paths.append(curr)
+		if end_condition.call(curr, list):
+			break
+	return paths
+
+class ThreadExecutorCallback:
+	signal finished
+## 线程执行
+static func thread_execute(method: Callable) -> ThreadExecutorCallback:
+	var thread := Thread.new()
+	var callback := ThreadExecutorCallback.new()
+	thread.start(
+		func():
+			method.call()
+			thread.wait_to_finish.call_deferred()
+			callback.finished.emit()
+	)
+	return callback
+
+static var _thread_queue : Array = []
+static var _thread_queue_status : bool = false
+## 线程队列执行
+static func thread_execute_queue(method: Callable) -> void:
+	_thread_queue.push_back(method)
+	if not _thread_queue_status:
+		_thread_queue_status =  true
+		_execute_thread_execute_queue(_thread_queue.pop_front())
+static func _execute_thread_execute_queue(method: Callable) -> void:
+	var thread := Thread.new()
+	thread.start.call_deferred(
+		func():
+			method.call()
+			thread.wait_to_finish.call_deferred()
+			if _thread_queue.is_empty():
+				_thread_queue_status = false
+			else:
+				_execute_thread_execute_queue(_thread_queue.pop_front())
+	)
+
+## 打印时间
+static func print_time() -> void:
+	print( Time.get_datetime_string_from_system(false, true))
+
+
+static func test_use_time(method: Callable, name:String = ""):
+	var t = Time.get_ticks_msec()
+	method.call()
+	print(name, " 执行所用时间：", Time.get_ticks_msec() - t)
+
+
+## 切分搜索，从中间切开进行搜索。传入的方法中需要有一个 [int] 参数接收判断结果，并返回预期到达的 int 值，如果返回的和传入的值一样，则终止
+static func binary_search(max_length: int, method: Callable) -> int:
+	var low : int = 0  # 数组最小索引值
+	var high : int = max_length  # 数组最大索引值
+	var mid : int
+	var target: int
+	while low <= high:
+		mid = int((low + high) / 2)  # 使用 int() 实现整数除法
+		target = method.call(mid)
+		if target == mid:
+			return mid
+		elif target > mid:
+			low = mid + 1
+		else:
+			high = mid - 1
+	return -1
+
+
+class ExecuteFinish:
+	extends Object
+	
+	signal finished
+
+
+## 在多线程中以批次处理，防止造成卡顿。
+## 注意：多线程中执行方法有时候调用顺序会不一样
+static func thread_execute_batch(list: Array, batch_count: int, method: Callable) -> ExecuteFinish:
+	var thread := Thread.new()
+	var finish_object := ExecuteFinish.new()
+	thread.start(
+		func():
+			for i in list.size():
+				if i % batch_count == 0:
+					# 必须先 await 之后才进行线程添加，否则会有概率报错
+					await Engine.get_main_loop().process_frame
+				method.call(list[i]) # 必须使用 call 如果使用 call_deferred 则使用线程毫无意义
+			finish_object.finished.emit()
+			Engine.get_main_loop().queue_delete(finish_object)
+			thread.wait_to_finish()
+	)
+	
+	return finish_object
+
+
+static func execute_batch(list: Array, batch_count: int, method: Callable) -> void:
+	var i : int = 0
+	while i < list.size():
+		method.call(list[i])
+		i += 1
+		if i % batch_count == 0:
+			await Engine.get_main_loop()
+
+
+# 向前移动
+static func move_in_direction(body: CharacterBody2D, velocity: Vector2, duration: float) -> Tween:
+	var tween : Tween
+	if body.is_inside_tree():
+		tween = body.create_tween()
+	else:
+		tween = Engine.get_main_loop().create_tween()
+	tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	tween.tween_method(
+		func(__):
+			body.velocity = velocity
+			body.move_and_slide()
+			,
+		0.0, 1.0, duration
+	)
+	return tween
+
+## 获取帧间隔的时间
+static func get_frame_interval_time(last_physics_frame: int) -> float:
+	return float(Engine.get_physics_frames() - last_physics_frame) / Engine.physics_ticks_per_second
+
+static func get_frame_time(physics_frame: int) -> float:
+	return float(physics_frame) / Engine.physics_ticks_per_second
+
+static func get_current_frame_time() -> float:
+	return float(Engine.get_physics_frames()) / Engine.physics_ticks_per_second
+
+
+class ThreadIteratorLoader:
+	extends Node
+	
+	signal finished
+	
+	var _iterator
+	var _callback: Callable
+	func _init(iterator: Array, callback: Callable, bind_node: Node = null) -> void:
+		_iterator = iterator.duplicate(true)
+		_callback = callback
+		if bind_node:
+			bind_node.add_child.call_deferred(self)
+		else:
+			Engine.get_main_loop().root.add_child.call_deferred(self)
+	
+	var idx : int = 0
+	func _process(_delta):
+		var time = Time.get_ticks_msec()
+		while idx < _iterator.size():
+			_callback.call(_iterator[idx])
+			idx += 1
+			if Time.get_ticks_msec() - time > 20:
+				break
+		if idx == _iterator.size():
+			#call_thread_safe("emit_signal", "finished")
+			finished.emit()
+			queue_free()
+			set_process(false)
+
+
+## 线程遍历数组，处理那种高消耗的遍历卡顿的内容（伪线程，是在节点的 [method Node._process] 中处理的内容，而非真正的 [Thread]）
+static func thread_for_array(list: Array, callback: Callable, bind_node: Node = null) -> ThreadIteratorLoader:
+	return ThreadIteratorLoader.new(list, callback, bind_node)
+
+
+
+##[br]简化连续共线的点
+##[br]
+##[br]- [param points]: 原始点数组 (PackedVector2Array)
+##[br]- [param epsilon]: 容差值 (默认 0.1，值越大越宽松，允许轻微偏离直线的点被移除)
+##[br]- [param is_closed]: 是否为闭合多边形 (默认 true，会检查首尾点的连接)
+##[br]
+##[br]返回: 简化后的点数组
+static func simplify_collinear_points(points: PackedVector2Array, epsilon: float = 0.1, is_closed: bool = true) -> PackedVector2Array:
+	if points.size() < 3:
+		return points.duplicate()
+
+	var simplified = PackedVector2Array()
+	simplified.append(points[0]) # 始终保留第一个点
+
+	# 遍历中间点
+	for i in range(1, points.size() - 1):
+		var prev = simplified[simplified.size() - 1]
+		var curr = points[i]
+		var next = points[i + 1]
+
+		# 计算叉积：(curr - prev) cross (next - prev)
+		var cross = (curr - prev).cross(next - prev)
+		
+		# 如果叉积的绝对值大于容差，说明不共线，保留当前点
+		if abs(cross) > epsilon:
+			simplified.append(curr)
+
+	# 保留最后一个点
+	simplified.append(points[points.size() - 1])
+
+	# 如果是闭合多边形，额外检查首尾和倒数第二个点是否共线
+	if is_closed and simplified.size() >= 3:
+		var first = simplified[0]
+		var last = simplified[simplified.size() - 1]
+		var second_last = simplified[simplified.size() - 2]
+		
+		var cross = (second_last - last).cross(first - last)
+		if abs(cross) <= epsilon:
+			simplified.remove_at(simplified.size() - 2)
+	return simplified
+
+
+static func sort_points(points: Array) -> Array:
+	if points.is_empty():
+		return points
+	var point = points.pick_random()
+	return await path_move(point, MathUtil.get_four_directions() if point is Vector2 else MathUtil.get_four_directions_i(),
+		func(next_point):
+			if points.has(next_point):
+				return true
+			return false
+	)
+
+static var _custom_param_methods_dict : Dictionary[int, Callable] = {}
+## 获取自定义参数数量方法
+static func get_custom_param_method(param_count: int = 0) -> Callable:
+	assert(param_count >= 0, "参数数量必须超过0")
+	if not _custom_param_methods_dict.has(param_count):
+		var script = GDScript.new()
+		var params_str = ""
+		if param_count > 0:
+			params_str = "param"
+			for i in param_count - 1:
+				params_str += ", param_%s" % i
+		script.source_code = """extends Object
+
+static func method(%s):
+	pass
+""" % params_str
+		script.reload()
+		var object = script.new()
+		_custom_param_methods_dict[param_count] = object.method
+	return _custom_param_methods_dict[param_count]
+
+
+static var _last_await_idle_tick: int = 0
+## 等待这个时间再执行下一个。使用这个方法需要加上 [code]await[/code] 关键字才能正常使用:
+##[codeblock]
+##await await_idle(20)
+##[/codeblock]
+static func await_idle(tick: int = 10) -> void:
+	if Time.get_ticks_msec() - _last_await_idle_tick > tick:
+		await Engine.get_main_loop().process_frame
+		_last_await_idle_tick = Time.get_ticks_msec()

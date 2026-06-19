@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://rgv81upqu2hy"]
+
+[ext_resource type="Script" uid="uid://bi1la77hy67sk" path="res://addons/apprentice/component/ui_effect/jump_and_shake_effect.gd" id="1_poy5h"]
+
+[sub_resource type="Curve" id="Curve_gsek3"]
+_data = [Vector2(0, 0), 0.0, 1.4, 0, 0, Vector2(0.290179, 0.361446), 3.29853, 3.29853, 0, 0, Vector2(0.477679, 0.759036), 1.4532, 1.4532, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Curve" id="Curve_mk646"]
+_limits = [-1.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1.49012e-08), 0.0, 7.00972, 0, 1, Vector2(0.097503, 0.683469), 0.0, 0.0, 0, 0, Vector2(0.1728, -0.558771), 0.0, 0.0, 0, 0, Vector2(0.264, 0.554637), 0.962628, 0.962628, 0, 0, Vector2(0.3616, -0.290018), 0.0, 0.0, 0, 0, Vector2(0.4432, 0.462493), 0.0, 0.0, 0, 0, Vector2(0.528, -0.22091), 0.0, 0.0, 0, 0, Vector2(0.6144, 0.324276), 0.0, 0.0, 0, 0, Vector2(0.6816, -0.121087), 0.0, 0.0, 0, 0, Vector2(0.7584, 0.0785588), 0.0, 0.0, 0, 0, Vector2(0.8304, -0.0443), 0.0, 0.0, 0, 0, Vector2(0.8976, 0.0324868), 0.0, 0.0, 0, 0, Vector2(0.9488, 0.00177205), 0.0, 0.0, 0, 0]
+point_count = 13
+
+[node name="TiaoQiHuangDong" type="Node"]
+script = ExtResource("1_poy5h")
+position_curve = SubResource("Curve_gsek3")
+rotate_curve = SubResource("Curve_mk646")

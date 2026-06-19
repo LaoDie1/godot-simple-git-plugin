@@ -36,7 +36,6 @@ scroll_fit_content_height = true
 syntax_highlighter = SubResource("SyntaxHighlighter_u1d4j")
 highlight_all_occurrences = true
 highlight_current_line = true
-gutters_draw_line_numbers = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=622810669]
 layout_mode = 1

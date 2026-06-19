@@ -25,7 +25,7 @@ static var _request: GitPlugin_CommandRequest:
 
 ## 执行 git 命令
 static func execute(command: String, request: GitPlugin_CommandRequest = null) -> Dictionary:
-	if not Engine.is_editor_hint() or plugin:
+	if not OS.has_feature("editor") or plugin:
 		if request == null:
 			request = _request
 		
@@ -51,6 +51,8 @@ static func execute(command: String, request: GitPlugin_CommandRequest = null) -
 				"error": FAILED,
 				"output": err_bytes.get_string_from_utf8(),
 			}
+	else:
+		printerr("没有执行", "plugin = ", plugin, "  is_editor = ", OS.has_feature("editor"))
 	return {
 		"error": FAILED,
 		"output": "",

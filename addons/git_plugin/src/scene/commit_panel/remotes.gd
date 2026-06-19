@@ -61,9 +61,10 @@ func update():
 	for item: String in result.split("\n"):
 		if item != "":
 			var split = item.split("\t")
-			var remote_name = split[0]
-			var url = split[1]
-			add_item(remote_name, url)
+			if split.size() > 0:
+				var remote_name = split[0]
+				var url = split[1]
+				add_item(remote_name, url)
 
 
 #============================================================

@@ -40,7 +40,12 @@ static func get_type_description(item: String) -> String:
 	var type = item[1]
 	if type == " ":
 		type = item[0]
-	return TypeName[type]
+	type = str(type).to_upper()
+	if TypeName.has(type):
+		return TypeName[type]
+	else:
+		printerr(TypeName, " 中不存在 ", type, "  ", TypeName.has(type))
+	return ""
 
 ## 文件是否未跟踪
 static func is_untracked_file(item: String):

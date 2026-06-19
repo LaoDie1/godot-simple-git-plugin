@@ -34,12 +34,12 @@ var _err_body_bytes_result : PackedByteArray
 var _bash_path : String = "cmd.exe"
 var _bash_param: String = "/C"
 
+
 func get_body_result() -> PackedByteArray:
 	return _body_bytes_result
 
 func get_err_result() -> PackedByteArray:
 	return _err_body_bytes_result
-
 
 func is_running() -> bool:
 	return _pid != 0
@@ -81,7 +81,6 @@ func _process(delta) -> void:
 		else:
 			OS.kill(_pid)
 			_pid = 0
-			
 			finished.emit(_body_bytes_result)
 
 
@@ -95,6 +94,7 @@ func _read_next(std: FileAccess) -> PackedByteArray:
 	if bytes and bytes[-1] == 10:
 		bytes = bytes.slice(0, -1)  #去掉末尾的 10 字节数据
 	return bytes
+
 
 func execute(command: String) -> void:
 	_body_bytes_result = PackedByteArray()

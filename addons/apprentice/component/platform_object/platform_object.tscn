@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://cgxt7bnw1wjp0"]
+
+[ext_resource type="Script" uid="uid://hnxh7glkx1kx" path="res://addons/apprentice/component/platform_object/platform_object.gd" id="1_8rpip"]
+[ext_resource type="Script" uid="uid://ck5lobxlgnvb" path="res://addons/apprentice/src/dynamic_properties/dynamic_properties.gd" id="2_4ce2o"]
+[ext_resource type="Script" uid="uid://bldf82gcn364b" path="res://addons/apprentice/src/node/else/state_node.gd" id="3_drf63"]
+[ext_resource type="Script" uid="uid://befsh872aouj3" path="res://addons/apprentice/src/node/else/timeline/skill_actuator.gd" id="4_gsp06"]
+[ext_resource type="Script" uid="uid://bdtluheup4maa" path="res://addons/apprentice/src/node/else/data_management/data_management.gd" id="5_xnwaw"]
+[ext_resource type="Script" uid="uid://ciiwradynvyu4" path="res://addons/apprentice/component/platform_object/platform_move_component.gd" id="6_ugkgc"]
+
+[node name="PlatformObject" type="Node2D" node_paths=PackedStringArray("body", "canvas", "properties", "states", "inventory", "skill_actuator", "move_component") groups=["PlatformObject"]]
+script = ExtResource("1_8rpip")
+body = NodePath("body")
+canvas = NodePath("body/canvas")
+properties = NodePath("component/DynamicProperties")
+states = NodePath("component/StateRoot")
+inventory = NodePath("component/Inventory")
+skill_actuator = NodePath("component/SkillActuator")
+move_component = NodePath("component/MoveComponent")
+
+[node name="component" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="DynamicProperties" type="Node" parent="component"]
+script = ExtResource("2_4ce2o")
+metadata/_custom_type_script = "uid://ck5lobxlgnvb"
+
+[node name="StateRoot" type="Node" parent="component"]
+script = ExtResource("3_drf63")
+metadata/_custom_type_script = "uid://bldf82gcn364b"
+
+[node name="SkillActuator" type="Node" parent="component"]
+script = ExtResource("4_gsp06")
+metadata/_custom_type_script = "uid://befsh872aouj3"
+
+[node name="Inventory" type="Node" parent="component"]
+script = ExtResource("5_xnwaw")
+id_keys = ["id"]
+metadata/_custom_type_script = "uid://bdtluheup4maa"
+
+[node name="MoveComponent" type="Node2D" parent="component" node_paths=PackedStringArray("role")]
+script = ExtResource("6_ugkgc")
+role = NodePath("../../body")
+metadata/_custom_type_script = "uid://ciiwradynvyu4"
+
+[node name="body" type="CharacterBody2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="canvas" type="Node2D" parent="body"]
+metadata/_edit_lock_ = true
+
+[node name="config" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="controller" type="Node2D" parent="."]
+metadata/_edit_lock_ = true

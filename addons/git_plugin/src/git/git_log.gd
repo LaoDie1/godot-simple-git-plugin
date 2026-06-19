@@ -17,19 +17,22 @@ static func execute(item_number: int = 0, request: GitPlugin_CommandRequest = nu
 		result = await GitPlugin_Executor.execute('git log --pretty="%H;;;%cd;;;%s " --date=iso ' + str(-item_number), request)
 	else:
 		result = await GitPlugin_Executor.execute('git log --pretty="%H;;;%cd;;;%s " --date=iso', request)
-	return _handle_result(result["output"])
+	if result:
+		return _handle_result(result["output"])
+	return []
 
 
 # 处理结果
-static func _handle_result(output: String):
+static func _handle_result(output: String) -> Array:
 	# 对每次提交进行分组
 	var list : Array = []
 	for line:String in output.split("\n"):
 		if line != "":
-			var items = line.split(";;;")
-			list.append({
-				"id": items[0],
-				"date": items[1].substr(0, 19),
-				"desc": items[2].strip_edges(),
-			})
+			var items = line.strip_edges().split(";;;")
+			if items.size() > 2:
+				list.append({
+					"id": items[0],
+					"date": items[1].substr(0, 19),
+					"desc": items[2].strip_edges(),
+				})
 	return list

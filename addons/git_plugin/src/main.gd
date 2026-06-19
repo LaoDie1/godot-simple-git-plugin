@@ -9,9 +9,11 @@
 class_name GitPlugin_Main
 extends Control
 
+const CommitPanel = preload("uid://bia558sh3e7pf")
+const InitPanel = preload("uid://dyecx61a10tjb")
 
-@onready var init_panel = %InitPanel
-@onready var commit_panel = %CommitPanel
+@onready var init_panel : InitPanel = %InitPanel
+@onready var commit_panel : CommitPanel = %CommitPanel
 
 func _ready() -> void:
 	commit_panel.visible = not init_panel.visible

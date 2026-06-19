@@ -8,9 +8,10 @@
 @tool
 extends Panel
 
+const Commit = preload("uid://claphjncmef80")
 
 @onready var tab_container = %TabContainer
-@onready var commit = %Commit
+@onready var commit : Commit = %Commit
 @onready var log = %Log
 @onready var remotes = %Remotes
 
