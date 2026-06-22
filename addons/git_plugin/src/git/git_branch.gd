@@ -11,8 +11,7 @@ class_name GitPlugin_Branch
 ## 当前分支
 static func show_current() -> String:
 	var result = await GitPlugin_Executor.execute("git branch --show-current")
-	var output = result["output"]
-	return output
+	return str(result["output"]).strip_edges()
 
 ## 本地分支列表
 static func list() -> Array:
