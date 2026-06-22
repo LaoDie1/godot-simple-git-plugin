@@ -158,7 +158,9 @@ func _on_pull_button_pressed():
 
 func _on_staged_changes_file_tree_actived_file(item_file: String, file: String) -> void:
 	var result = await GitPlugin_Add.add_one(file)
-	if result["error"] == OK:
+	if result["error"] == OK or str(result["output"]).begins_with("warning:"):
+		#if result["error"] != OK and Engine.is_editor_hint():
+			#push_warning(JSON.stringify(result["output"]))
 		staged_changes_file_tree.remove_item(item_file)
 		committed_file_tree.add_item(item_file)
 

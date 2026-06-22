@@ -25,7 +25,7 @@ static var _request: GitPlugin_CommandRequest:
 
 ## 执行 git 命令
 static func execute(command: String, request: GitPlugin_CommandRequest = null) -> Dictionary:
-	if not OS.has_feature("editor") or plugin:
+	if not OS.has_feature("editor") or plugin or not Engine.is_editor_hint():
 		if request == null:
 			request = _request
 		

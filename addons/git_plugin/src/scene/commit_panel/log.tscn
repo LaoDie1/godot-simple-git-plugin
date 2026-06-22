@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bh3cg6v3f4v5n" path="res://addons/git_plugin/src/scene/commit_panel/Log.gd" id="1_wcwv8"]
 [ext_resource type="Script" uid="uid://dx7pxgl3rpvwj" path="res://addons/git_plugin/src/git/@command_request.gd" id="2_ytyk7"]
 
-[sub_resource type="DPITexture" id="DPITexture_ytyk7"]
+[sub_resource type="DPITexture" id="DPITexture_wbeix"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M5 8a4 4 0 1 1 4 4v2a6 6 0 1 0-6-6H1l3 4 3-4z\"/></svg>
 "
 color_map = {
@@ -98,7 +98,7 @@ Color(0.5254902, 0.61960787, 0.7490196, 1): Color(0.4392157, 0.5921569, 0.803921
 Color(0.6, 0.76862746, 1, 1): Color(0.27058825, 0.5372549, 0.9019608, 1)
 }
 
-[sub_resource type="DPITexture" id="DPITexture_nwie6"]
+[sub_resource type="DPITexture" id="DPITexture_ytyk7"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M2 1a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h1V3h9V2a1 1 0 0 0-1-1zm3 3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1zm1 2h7v7H6z\"/></svg>
 "
 color_map = {
@@ -220,7 +220,7 @@ size_flags_horizontal = 3
 [node name="LogNumberOption" type="OptionButton" parent="HBoxContainer" unique_id=96427276]
 unique_name_in_owner = true
 layout_mode = 2
-selected = 0
+selected = 1
 item_count = 5
 popup/item_0/text = "10"
 popup/item_0/id = 0
@@ -239,7 +239,7 @@ custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Refresh"
-icon = SubResource("DPITexture_ytyk7")
+icon = SubResource("DPITexture_wbeix")
 icon_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="." unique_id=807107609]
@@ -263,7 +263,7 @@ editable = false
 [node name="CopyButton" type="Button" parent="HBoxContainer2" unique_id=153455969]
 unique_name_in_owner = true
 layout_mode = 2
-icon = SubResource("DPITexture_nwie6")
+icon = SubResource("DPITexture_ytyk7")
 
 [node name="VSplitContainer" type="VSplitContainer" parent="." unique_id=1952690314]
 layout_mode = 2

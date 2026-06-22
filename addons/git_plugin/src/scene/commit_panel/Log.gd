@@ -83,6 +83,7 @@ func update_log():
 	if item_text != "All":
 		log_number = int(item_text)
 	
+	print(unpush_list)
 	var result : Array = await GitPlugin_Log.execute(log_number, command_request)
 	var idx : int = 0
 	var icon: Texture2D

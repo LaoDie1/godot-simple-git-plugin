@@ -134,6 +134,7 @@ func add_item(item_text: String):
 			print(" >>> FileTree: item type = ", type_desc)
 	
 	# 文件名
+	file = file.strip_edges()
 	item.set_text(0, file + " (%s)" % type_desc.capitalize())
 	item.set_tooltip_text(0, item_text)
 	item.set_meta("file", file)

@@ -12,6 +12,10 @@ class_name GitPlugin_Add
 static func add_one(file: String) -> Dictionary:
 	# 使用文件路径的方式添加
 	var result = await GitPlugin_Executor.execute("git add %s" % file)
+	#if result["error"] == FAILED:
+		#if str(result["output"]).begins_with("warning:"):
+			#result["error"] = OK
+			#result["output"] = str(result["output"]).substr(8)
 	return result
 
 
