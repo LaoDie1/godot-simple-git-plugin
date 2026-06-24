@@ -524,12 +524,12 @@ text = "Branch"
 [node name="BranchNameOption" type="OptionButton" parent="HBoxContainer" unique_id=456449796]
 unique_name_in_owner = true
 layout_mode = 2
-selected = 1
+selected = 0
 item_count = 2
 popup/item_0/text = "main"
 popup/item_0/icon = SubResource("DPITexture_on0s7")
 popup/item_0/id = 0
-popup/item_1/text = "v2"
+popup/item_1/text = "master"
 popup/item_1/icon = SubResource("DPITexture_on0s7")
 popup/item_1/id = 1
 
@@ -569,7 +569,7 @@ text = "Untracked files"
 [node name="UnstagedChangesFileCountLabel" type="Label" parent="VSplitContainer/VBoxContainer/HBoxContainer" unique_id=497307969]
 unique_name_in_owner = true
 layout_mode = 2
-text = "(140)"
+text = "(0)"
 
 [node name="Control" type="Control" parent="VSplitContainer/VBoxContainer/HBoxContainer" unique_id=1579225589]
 layout_mode = 2
@@ -618,7 +618,7 @@ text = "Changes not staged for commit"
 [node name="StagedFilesCountLabel" type="Label" parent="VSplitContainer/VBoxContainer2/HBoxContainer3" unique_id=1544748922]
 unique_name_in_owner = true
 layout_mode = 2
-text = "(168)"
+text = "(0)"
 
 [node name="Control" type="Control" parent="VSplitContainer/VBoxContainer2/HBoxContainer3" unique_id=1324280341]
 layout_mode = 2

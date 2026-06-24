@@ -24,6 +24,6 @@ static func files(commit_id: String, request: GitPlugin_CommandRequest = null) -
 	# 所有文件
 	var files : Array[String] = []
 	for i in range(from_line_idx, lines.size()):
-		files.append(lines[i])
+		files.append(lines[i].trim_prefix('"').trim_suffix('"'))
 	
 	return files
